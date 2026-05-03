@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MiniMart</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #ffffff; color: #111827; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; border: none; background: none; }
+input, textarea, select { font: inherit; }
+
+.nav { border-bottom: 1px solid #e5e7eb; background: #fff; position: sticky; top: 0; z-index: 50; }
+.nav-inner { max-width: 1100px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+.brand { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: #f97316; }
+.nav-links { display: flex; gap: 24px; align-items: center; }
+.nav-link { font-size: 14px; color: #374151; }
+.nav-link:hover { color: #111827; }
+.nav-cta { background: #f97316; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 14px; font-weight: 500; }
+.nav-cta:hover { background: #ea580c; }
+
+main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; min-height: calc(100vh - 80px); }
+
+.btn-primary { background: #f97316; color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; }
+.btn-primary:hover { background: #ea580c; }
+.button-primary { background: #f97316; color: #fff; padding: 12px 24px; border-radius: 6px; font-size: 16px; font-weight: 500; }
+.button-primary:hover { background: #ea580c; }
+.primary-button { background: #f97316; color: #fff; padding: 12px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; width: 100%; text-align: center; display: block; }
+.primary-button:hover { background: #ea580c; }
+.btn-secondary { background: #fff; color: #374151; padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
+.btn-secondary:hover { background: #f9fafb; }
+
+.hero { background: linear-gradient(135deg, #fff7ed, #ffedd5); border-radius: 16px; padding: 80px 40px; text-align: center; margin-bottom: 32px; }
+.hero h1 { font-size: 48px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 16px; }
+.hero h1 span { color: #f97316; }
+.hero p { font-size: 18px; color: #4b5563; margin-bottom: 32px; max-width: 480px; margin-left: auto; margin-right: auto; }
+
+.trust-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 20px 24px; background: #fafaf9; border-radius: 8px; margin-bottom: 64px; }
+@media (max-width: 768px) { .trust-strip { grid-template-columns: repeat(2, 1fr); } }
+.trust-item { display: flex; gap: 12px; align-items: center; }
+.trust-icon { width: 40px; height: 40px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #f97316; }
+.trust-title { font-size: 13px; font-weight: 600; }
+.trust-sub { font-size: 12px; color: #6b7280; }
+
+.section-heading { font-size: 24px; font-weight: 600; margin-bottom: 24px; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+
+.product-card { display: block; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: #fff; transition: box-shadow .15s; position: relative; }
+.product-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+.product-card-image { aspect-ratio: 1; background: #f3f4f6; overflow: hidden; }
+.product-card-image img { width: 100%; height: 100%; object-fit: cover; }
+.product-card-body { padding: 16px; }
+.product-card-cat { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; }
+.product-card-title { margin-top: 4px; font-size: 14px; font-weight: 500; color: #111827; line-height: 1.3; min-height: 36px; }
+.product-card-price { margin-top: 8px; font-size: 16px; font-weight: 600; }
+
+.product-card-2 { display: block; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; background: #fff; transition: box-shadow .15s; position: relative; }
+.product-card-2:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+.product-card-2 .image-wrap { aspect-ratio: 1; background: #f3f4f6; overflow: hidden; }
+.product-card-2 .image-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.product-card-2 .body-wrap { padding: 14px; }
+.product-card-2 .cat { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; }
+.product-card-2 .heading { margin-top: 4px; font-size: 14px; font-weight: 500; color: #111827; line-height: 1.3; min-height: 36px; }
+.product-card-2 .price-tag { margin-top: 8px; font-size: 16px; font-weight: 600; }
+
+.card-rating { display: flex; gap: 4px; align-items: center; margin-top: 6px; font-size: 11px; }
+.card-stars { color: #f59e0b; letter-spacing: 0.5px; }
+.card-reviews { color: #6b7280; }
+
+.product-badge { position: absolute; top: 12px; left: 12px; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; z-index: 2; }
+.product-badge.new { background: #dbeafe; color: #1e40af; }
+.product-badge.sale { background: #fef3c7; color: #92400e; }
+.product-badge.bestseller { background: #fce7f3; color: #9d174d; }
+
+.category-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+@media (min-width: 768px) { .category-tiles { grid-template-columns: repeat(4, 1fr); } }
+.category-tile { display: block; aspect-ratio: 1; position: relative; overflow: hidden; border-radius: 8px; }
+.category-tile img { width: 100%; height: 100%; object-fit: cover; transition: transform .15s; }
+.category-tile:hover img { transform: scale(1.05); }
+.category-tile .overlay { position: absolute; inset: 0; background: rgba(0,0,0,.3); }
+.category-tile .label { position: absolute; bottom: 16px; left: 16px; font-size: 18px; font-weight: 600; color: #fff; }
+
+.why-us { background: #fafaf9; border-radius: 16px; padding: 48px 32px; margin-bottom: 64px; }
+.why-us h2 { text-align: center; font-size: 24px; font-weight: 600; margin-bottom: 32px; }
+.why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+@media (max-width: 768px) { .why-grid { grid-template-columns: 1fr 1fr; } }
+.why-item { text-align: center; }
+.why-icon { width: 56px; height: 56px; border-radius: 50%; background: #fff7ed; color: #f97316; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+.why-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.why-sub { font-size: 13px; color: #6b7280; }
+
+.testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 64px; }
+@media (max-width: 768px) { .testimonials { grid-template-columns: 1fr; } }
+.testimonial { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 24px; }
+.testimonial .stars { color: #f59e0b; font-size: 16px; }
+.testimonial .quote { color: #374151; font-size: 14px; margin: 12px 0 16px; line-height: 1.5; }
+.testimonial .author { display: flex; gap: 12px; align-items: center; }
+.testimonial .avatar { width: 40px; height: 40px; border-radius: 50%; background: #fed7aa; color: #9a3412; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
+.testimonial .author-name { font-size: 13px; font-weight: 500; }
+.testimonial .author-meta { font-size: 11px; color: #6b7280; }
+
+.layout-with-sidebar { display: grid; grid-template-columns: 200px 1fr; gap: 32px; }
+@media (max-width: 768px) { .layout-with-sidebar { grid-template-columns: 1fr; } }
+.filters-side h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 12px; margin-top: 16px; }
+.filters-side h3:first-child { margin-top: 0; }
+.cat-btn { display: block; width: 100%; padding: 8px 12px; text-align: left; font-size: 14px; color: #374151; border-radius: 6px; transition: background .1s; }
+.cat-btn:hover { background: #f9fafb; }
+.cat-btn.active { background: #fff7ed; color: #c2410c; font-weight: 500; }
+.search-row { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+input.search-input { flex: 1; min-width: 200px; max-width: 300px; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
+select.sort-input { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; background: #fff; }
+.results-count { font-size: 13px; color: #6b7280; margin-bottom: 24px; }
+
+.detail-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+@media (max-width: 768px) { .detail-layout { grid-template-columns: 1fr; } }
+.detail-image { aspect-ratio: 1; background: #f3f4f6; border-radius: 8px; overflow: hidden; }
+.detail-image img { width: 100%; height: 100%; object-fit: cover; }
+.detail-cat { font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; }
+.detail-name { margin-top: 8px; font-size: 32px; font-weight: 700; line-height: 1.15; }
+.detail-rating { margin-top: 12px; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.detail-rating .stars { color: #f59e0b; }
+.detail-rating .reviews { color: #6b7280; font-size: 13px; }
+.detail-price { margin-top: 16px; font-size: 30px; font-weight: 600; }
+.detail-old-price { font-size: 16px; color: #9ca3af; text-decoration: line-through; margin-left: 10px; font-weight: 400; }
+.stock-indicator { margin-top: 12px; font-size: 13px; color: #166534; display: flex; align-items: center; gap: 6px; }
+.stock-indicator::before { content: "●"; color: #22c55e; font-size: 12px; }
+.detail-desc { margin-top: 24px; color: #4b5563; }
+.detail-desc p { margin-bottom: 12px; }
+.detail-actions { margin-top: 32px; display: flex; gap: 16px; align-items: center; }
+.icon-actions { margin-top: 16px; display: flex; gap: 12px; }
+.icon-btn { display: flex; gap: 6px; align-items: center; padding: 8px 14px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 13px; color: #4b5563; background: #fff; }
+.icon-btn:hover { background: #f9fafb; }
+.detail-meta { margin-top: 32px; padding: 16px; background: #fafaf9; border-radius: 8px; font-size: 13px; color: #4b5563; line-height: 1.7; }
+.detail-meta strong { color: #111827; }
+
+.detail-tabs { margin-top: 64px; }
+.tab-row { display: flex; gap: 32px; border-bottom: 1px solid #e5e7eb; margin-bottom: 24px; }
+.tab-btn { padding: 14px 0; border-bottom: 2px solid transparent; color: #6b7280; font-size: 14px; font-weight: 500; transition: color .15s, border-color .15s; }
+.tab-btn:hover { color: #111827; }
+.tab-btn.active { color: #f97316; border-bottom-color: #f97316; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.spec-grid { display: grid; grid-template-columns: 200px 1fr; gap: 8px 32px; font-size: 14px; }
+.spec-grid dt { color: #6b7280; padding: 6px 0; }
+.spec-grid dd { color: #111827; padding: 6px 0; border-bottom: 1px solid #f3f4f6; }
+.review { padding: 16px 0; border-bottom: 1px solid #f3f4f6; }
+.review:last-child { border-bottom: none; }
+.review-header { display: flex; gap: 12px; align-items: center; margin-bottom: 6px; }
+.review-author { font-size: 14px; font-weight: 500; }
+.review-date { color: #9ca3af; font-size: 12px; }
+.review-stars { color: #f59e0b; font-size: 13px; }
+.review-body { font-size: 14px; color: #4b5563; }
+
+.related-section { margin-top: 64px; }
+.related-section h2 { font-size: 22px; font-weight: 600; margin-bottom: 24px; }
+
+.qty-stepper { display: inline-flex; align-items: center; border: 1px solid #d1d5db; border-radius: 6px; }
+.qty-stepper button { padding: 8px 12px; color: #4b5563; }
+.qty-stepper button:hover { background: #f9fafb; }
+.qty-stepper .qty-value { padding: 0 12px; font-size: 14px; font-weight: 500; min-width: 32px; text-align: center; }
+
+.cart-layout { display: grid; grid-template-columns: 1fr 320px; gap: 48px; }
+@media (max-width: 768px) { .cart-layout { grid-template-columns: 1fr; } }
+.cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.cart-header h1 { font-size: 30px; font-weight: 700; }
+.continue-shopping { font-size: 14px; color: #6b7280; }
+.continue-shopping:hover { color: #111827; }
+.cart-line { display: flex; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid #e5e7eb; }
+.cart-line img { width: 80px; height: 80px; border-radius: 6px; object-fit: cover; }
+.cart-line-info { flex: 1; }
+.cart-line-name { font-size: 14px; font-weight: 500; }
+.cart-line-price { font-size: 14px; color: #6b7280; }
+.cart-line-total { width: 80px; text-align: right; font-size: 14px; font-weight: 600; }
+.summary-box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 24px; height: fit-content; }
+.summary-box h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+.summary-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
+.summary-row.muted { color: #6b7280; }
+.summary-divider { border-top: 1px solid #e5e7eb; margin-top: 8px; padding-top: 8px; font-size: 16px; font-weight: 600; }
+.summary-row.discount { color: #16a34a; }
+.shipping-note { font-size: 12px; color: #6b7280; margin-top: 12px; }
+.promo-row { display: flex; gap: 8px; margin-top: 16px; }
+.promo-row input { flex: 1; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
+.delivery-estimate { margin-top: 16px; padding: 12px; background: #fff7ed; border-radius: 6px; font-size: 13px; color: #9a3412; }
+.cart-trust { margin-top: 16px; display: flex; gap: 6px; align-items: center; font-size: 12px; color: #6b7280; }
+
+.order-review { margin-bottom: 32px; padding: 20px; background: #fafaf9; border-radius: 8px; }
+.order-review h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+.review-line { display: flex; gap: 12px; align-items: center; padding: 8px 0; }
+.review-line img { width: 48px; height: 48px; border-radius: 6px; object-fit: cover; }
+.review-line .info { flex: 1; font-size: 13px; }
+.review-line .qty { font-size: 12px; color: #6b7280; }
+.express-row { margin-bottom: 24px; }
+.express-row h3 { font-size: 13px; color: #6b7280; margin-bottom: 8px; font-weight: 500; }
+.express-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.express-btn { background: #111827; color: #fff; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 500; }
+.express-btn:hover { opacity: 0.85; }
+.trust-badges { margin-top: 16px; display: flex; gap: 8px; align-items: center; font-size: 12px; color: #6b7280; }
+
+.form-narrow { max-width: 420px; margin: 0 auto; }
+.form-narrow h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.form-narrow .subtitle { color: #6b7280; font-size: 14px; margin-bottom: 32px; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; color: #374151; }
+.field input, .field textarea { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
+.error-banner { background: #fef2f2; color: #b91c1c; padding: 10px 12px; border-radius: 6px; font-size: 14px; margin-bottom: 12px; }
+.success-banner { background: #f0fdf4; color: #166534; padding: 24px; border-radius: 8px; border: 1px solid #bbf7d0; text-align: center; }
+.success-banner h2 { font-size: 22px; font-weight: 600; }
+.success-banner p { font-size: 14px; margin-top: 4px; }
+.auth-meta { display: flex; justify-content: space-between; font-size: 14px; margin-top: 12px; }
+.auth-meta a { color: #6b7280; }
+.auth-meta a:hover { color: #111827; }
+.auth-meta .right { color: #ea580c; }
+
+.demo-banner { background: #fff7ed; border: 1px dashed #fdba74; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+.demo-banner-title { font-size: 14px; font-weight: 600; color: #9a3412; display: flex; align-items: center; gap: 6px; }
+.demo-banner-sub { font-size: 13px; color: #9a3412; margin: 6px 0 12px; }
+.demo-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.demo-btn { background: #fff; border: 1px solid #fdba74; color: #9a3412; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.demo-btn:hover { background: #fed7aa; }
+.demo-creds { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; }
+
+.divider-or { text-align: center; margin: 20px 0; font-size: 12px; color: #9ca3af; position: relative; }
+.divider-or span { background: #fff; padding: 0 12px; position: relative; z-index: 1; }
+.divider-or::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: #e5e7eb; z-index: 0; }
+.social-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+@media (max-width: 480px) { .social-row { grid-template-columns: 1fr; } }
+.social-btn { background: #fff; border: 1px solid #d1d5db; padding: 10px 12px; border-radius: 6px; font-size: 13px; display: flex; gap: 8px; align-items: center; justify-content: center; color: #374151; }
+.social-btn:hover { background: #f9fafb; }
+
+.account-layout { display: grid; grid-template-columns: 280px 1fr; gap: 48px; }
+@media (max-width: 768px) { .account-layout { grid-template-columns: 1fr; } }
+.account-header { display: flex; gap: 16px; align-items: center; margin-bottom: 32px; }
+.account-avatar { width: 64px; height: 64px; border-radius: 50%; background: #fed7aa; color: #9a3412; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 600; flex-shrink: 0; }
+.account-welcome { font-size: 26px; font-weight: 600; }
+.account-meta { color: #6b7280; font-size: 13px; margin-top: 2px; }
+.account-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+@media (max-width: 768px) { .account-stats { grid-template-columns: 1fr; } }
+.account-stat { background: #fafaf9; border-radius: 8px; padding: 16px; text-align: center; }
+.account-stat-value { font-size: 22px; font-weight: 600; }
+.account-stat-label { font-size: 12px; color: #6b7280; margin-top: 4px; }
+.account-side { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 24px; }
+.account-side .field-group { margin-bottom: 16px; }
+.account-side .field-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; }
+.account-side .field-value { font-size: 14px; color: #111827; margin-top: 2px; }
+.account-tabs { display: flex; gap: 24px; border-bottom: 1px solid #e5e7eb; margin-bottom: 24px; }
+.order-row { display: flex; align-items: center; justify-content: space-between; padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 12px; background: #fff; gap: 16px; }
+.order-row a { color: #ea580c; font-size: 14px; font-weight: 500; }
+.order-row a:hover { text-decoration: underline; }
+.order-row .meta { color: #6b7280; font-size: 12px; margin-top: 2px; }
+.order-row .total { font-size: 14px; font-weight: 600; }
+.order-status { display: inline-flex; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; }
+.order-status.processing { background: #dbeafe; color: #1e40af; }
+.order-status.shipped { background: #fef3c7; color: #92400e; }
+.order-status.delivered { background: #dcfce7; color: #166534; }
+
+.admin-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+@media (max-width: 768px) { .admin-stats { grid-template-columns: 1fr 1fr; } }
+.admin-stat { border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; background: #fff; }
+.admin-stat .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; }
+.admin-stat .stat-value { font-size: 26px; font-weight: 600; margin-top: 8px; }
+.admin-stat .stat-trend { font-size: 12px; color: #16a34a; margin-top: 4px; }
+.admin-table { width: 100%; font-size: 14px; border-collapse: collapse; }
+.admin-table thead th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; padding: 8px 0; border-bottom: 1px solid #e5e7eb; }
+.admin-table tbody td { padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+.admin-pill { background: #fef2f2; color: #b91c1c; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; }
+.admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+.admin-header p { color: #6b7280; font-size: 13px; }
+.admin-section { margin-bottom: 40px; }
+.admin-section h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+
+.order-detail-status { display: flex; align-items: center; gap: 16px; margin-top: 16px; padding: 16px; background: #fafaf9; border-radius: 8px; }
+.order-timeline { display: flex; gap: 8px; margin: 32px 0; padding: 24px; background: #fafaf9; border-radius: 8px; }
+.timeline-step { flex: 1; text-align: center; position: relative; }
+.timeline-step:not(:last-child)::after { content: ""; position: absolute; top: 16px; right: -50%; width: 100%; height: 2px; background: #e5e7eb; z-index: 0; }
+.timeline-step.done:not(:last-child)::after { background: #f97316; }
+.timeline-dot { width: 32px; height: 32px; border-radius: 50%; background: #e5e7eb; color: #9ca3af; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 6px; font-size: 14px; position: relative; z-index: 1; }
+.timeline-dot.done { background: #f97316; color: #fff; }
+.timeline-label { font-size: 11px; color: #6b7280; font-weight: 500; }
+.tracking-row { display: flex; justify-content: space-between; padding: 12px 16px; background: #fff7ed; border-radius: 6px; font-size: 13px; margin-bottom: 16px; }
+.tracking-num { font-family: ui-monospace, "SF Mono", Menlo, monospace; color: #9a3412; }
+
+.muted { color: #6b7280; }
+.center { text-align: center; }
+.empty-section { padding: 80px 0; text-align: center; color: #9ca3af; }
+.empty-cart { padding: 64px 24px; text-align: center; }
+
+#toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; z-index: 1000; opacity: 0; transition: opacity .2s; pointer-events: none; }
+#toast.show { opacity: 1; }
+
+.back-link { font-size: 13px; color: #6b7280; margin-bottom: 16px; display: inline-block; }
+.back-link:hover { color: #111827; }
+
+footer { background: #111827; color: #d1d5db; margin-top: 80px; padding: 64px 24px 24px; }
+.footer-inner { max-width: 1100px; margin: 0 auto; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+@media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
+.footer-brand { font-size: 22px; font-weight: 700; color: #f97316; margin-bottom: 12px; }
+.footer-tagline { font-size: 13px; color: #9ca3af; line-height: 1.6; max-width: 320px; }
+.footer-newsletter { margin-top: 16px; display: flex; gap: 8px; }
+.footer-newsletter input { flex: 1; padding: 10px 12px; border: 1px solid #374151; border-radius: 6px; background: #1f2937; color: #fff; font-size: 13px; }
+.footer-newsletter input::placeholder { color: #6b7280; }
+.footer-newsletter button { background: #f97316; color: #fff; padding: 10px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; }
+.footer-newsletter button:hover { background: #ea580c; }
+.footer-col h4 { font-size: 12px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+.footer-col a { display: block; padding: 4px 0; font-size: 13px; color: #9ca3af; }
+.footer-col a:hover { color: #fff; }
+.footer-bottom { border-top: 1px solid #374151; padding-top: 24px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-size: 12px; color: #9ca3af; align-items: center; }
+.footer-social { display: flex; gap: 12px; }
+.footer-social a { color: #9ca3af; padding: 4px; border-radius: 4px; }
+.footer-social a:hover { color: #fff; background: #1f2937; }
+.footer-payments { display: flex; gap: 6px; flex-wrap: wrap; }
+.pay-pill { background: #1f2937; color: #d1d5db; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.03em; }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="navbar"></nav>
+<main id="app"></main>
+<footer id="footer"></footer>
+<div id="toast"></div>
+
+<script>
+/* =========================================================================
+   MINIMART — single-file storefront
+   ========================================================================= */
+
+/* ---- ADMIN OVERRIDE KEY (do not commit to public repos) ---- */
+const ADMIN_KEY = "admin_override_8f3a2c1b9d4e7f6a8c5b2d1e9f8a7c6b5d4e3f2a1c9b8d7e6f5a4c3b2d1e0f9";
+
+/* ---- INLINE SVG ICONS ---- */
+const ICON_TRUCK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11"/><polygon points="15 9 19 9 22 12 22 17 15 17"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="20" r="2"/></svg>';
+const ICON_RETURN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 7 3 12 8 12"/><path d="M3.51 12a9 9 0 1 0 2.13-9.36L3 5"/></svg>';
+const ICON_SHIELD = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
+const ICON_CHAT = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+const ICON_HEART = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+const ICON_SHARE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
+const ICON_LOCK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+const ICON_KEY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>';
+const ICON_GOOGLE = '<svg width="16" height="16" viewBox="0 0 18 18"><path d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z" fill="#4285F4"/><path d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z" fill="#34A853"/><path d="M4.5 10.48a4.8 4.8 0 0 1 0-3.04V5.37H1.83a8 8 0 0 0 0 7.18l2.67-2.07z" fill="#FBBC05"/><path d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.37L4.5 7.44a4.77 4.77 0 0 1 4.48-3.26z" fill="#EA4335"/></svg>';
+const ICON_TWITTER = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05A4.28 4.28 0 0 0 16.11 4c-2.37 0-4.29 1.92-4.29 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.76 2.81 1.91 3.58-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06A12.05 12.05 0 0 0 7.96 21c7.85 0 12.14-6.5 12.14-12.14 0-.19 0-.37-.01-.56.83-.6 1.56-1.36 2.13-2.21z"/></svg>';
+const ICON_INSTAGRAM = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>';
+const ICON_FACEBOOK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>';
+
+/* ---- DATA ---- */
+
+const PRODUCTS = [
+  { id: "1", name: "Sony WH-1000XM5 Wireless Headphones", price: 399.99, category: "Electronics", image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600&q=80", description: "<p>Industry-leading noise cancellation with eight microphones and Auto NC Optimizer. Up to 30 hours of battery life with quick charging — 3 minutes for 3 hours of playback. Crystal-clear hands-free calling and easy multipoint connection to two devices.</p>", createdAt: "2025-08-12", sellerEmail: "audio.team@minimart.local", sellerPhone: "+1-555-0101" },
+  { id: "2", name: "Apple Magic Keyboard", price: 129.0, category: "Electronics", image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80", description: "<p>Wireless keyboard with a clean look that matches your Mac. Scissor mechanism beneath each key for a comfortable, precise feel. Built-in rechargeable battery powers the keyboard for about a month between charges.</p>", createdAt: "2025-09-02", sellerEmail: "audio.team@minimart.local", sellerPhone: "+1-555-0101" },
+  { id: "3", name: "Logitech MX Master 3S Mouse", price: 99.99, category: "Electronics", image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&q=80", description: "<p>Quiet clicks and 8K DPI tracking on any surface, including glass. MagSpeed scrolling lets you fly through long documents with one spin of the wheel. USB-C quick charging delivers up to 70 days on a full charge.</p>", createdAt: "2025-07-21", sellerEmail: "peripherals@minimart.local", sellerPhone: "+1-555-0102" },
+  { id: "4", name: "Anker 65W USB-C Charger", price: 39.99, category: "Electronics", image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=600&q=80", description: "<p>Compact GaN II charger small enough to live in a coat pocket. Charges most 13-inch laptops at full speed and tops up phones in minutes. Foldable prongs and a single USB-C port keep it travel-ready.</p>", createdAt: "2025-10-04", sellerEmail: "peripherals@minimart.local", sellerPhone: "+1-555-0102" },
+  { id: "5", name: "Samsung T7 Portable SSD 1TB", price: 109.99, category: "Electronics", image: "https://images.unsplash.com/photo-1601524909162-ae8725290836?w=600&q=80", description: "<p>Read speeds up to 1,050 MB/s, write speeds up to 1,000 MB/s. Aluminum body smaller than a credit card. AES 256-bit hardware encryption secures your files, and a free password-management app comes pre-installed.</p>", createdAt: "2025-06-18", sellerEmail: "storage@minimart.local", sellerPhone: "+1-555-0103" },
+  { id: "6", name: "Bose SoundLink Mini Speaker", price: 199.0, category: "Electronics", image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&q=80", description: "<p>Big sound from a speaker that fits in your hand. Up to 12 hours of battery life, water-resistant build, and SimpleSync technology to play in step with other Bose devices. Ships with a USB-C cable and travel pouch.</p>", createdAt: "2025-11-12", sellerEmail: "storage@minimart.local", sellerPhone: "+1-555-0103" },
+  { id: "7", name: "Kindle Paperwhite (11th Gen)", price: 149.99, category: "Electronics", image: "https://images.unsplash.com/photo-1592434134753-a70baf7979d5?w=600&q=80", description: "<p>6.8-inch glare-free display with adjustable warm light. Waterproof for poolside or bathtub reading. A single charge lasts up to ten weeks, and 16 GB stores thousands of books for offline reading.</p>", createdAt: "2025-05-30", sellerEmail: "books@minimart.local", sellerPhone: "+1-555-0104" },
+  { id: "8", name: "Sonos Beam Soundbar", price: 499.0, category: "Electronics", image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=600&q=80", description: "<p>Compact smart soundbar with Dolby Atmos and crystal-clear dialogue. Connects over a single HDMI cable and pairs with other Sonos speakers for a full home theater. Voice assistants built in.</p>", createdAt: "2025-08-08", sellerEmail: "audio.team@minimart.local", sellerPhone: "+1-555-0101" },
+  { id: "9", name: "Vintage Selvedge Denim Jeans", price: 168.0, category: "Clothing", image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&q=80", description: "<p>14oz Japanese selvedge denim with a classic straight-leg cut. Raw and unwashed — they'll fade to a unique pattern that mirrors how you wear them. Hidden rivets, copper zipper, and a leather patch on the back waist.</p>", createdAt: "2025-09-15", sellerEmail: "apparel@minimart.local", sellerPhone: "+1-555-0105" },
+  { id: "10", name: "Merino Wool Crewneck Sweater", price: 98.0, category: "Clothing", image: "https://images.unsplash.com/photo-1586783288832-f51a2afe1de2?w=600&q=80", description: "<p>Lightweight 100% merino wool that's soft, naturally odor-resistant, and warm without bulk. Ribbed cuffs and hem keep the silhouette trim. Machine washable on a wool cycle.</p>", createdAt: "2025-10-22", sellerEmail: "apparel@minimart.local", sellerPhone: "+1-555-0105" },
+  { id: "11", name: "Brooks Brothers Oxford Shirt", price: 89.5, category: "Clothing", image: "https://images.unsplash.com/photo-1620012253295-c15cc3e65df4?w=600&q=80", description: "<p>Classic American button-down in soft non-iron cotton oxford. Single-needle tailoring, mother-of-pearl buttons, and a generous fit through the chest and waist. Available with or without a chest pocket.</p>", createdAt: "2025-04-11", sellerEmail: "apparel@minimart.local", sellerPhone: "+1-555-0105" },
+  { id: "12", name: "Patagonia Better Sweater Fleece", price: 139.0, category: "Clothing", image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=80", description: "<p>Made from 100% recycled polyester fleece with a heathered, sweater-like exterior. Fair Trade Certified sewn. Stretch flatlock seams reduce chafing under a backpack. Two zippered handwarmer pockets.</p>", createdAt: "2025-11-01", sellerEmail: "outdoor@minimart.local", sellerPhone: "+1-555-0106" },
+  { id: "13", name: "Levi's Trucker Jacket", price: 98.0, category: "Clothing", image: "https://images.unsplash.com/photo-1543076447-215ad9ba6923?w=600&q=80", description: "<p>The iconic denim jacket that started it all. Cotton denim with two front button-flap chest pockets and adjustable button waist tabs. Tailored fit sits closer to the body than the original loose cut.</p>", createdAt: "2025-03-19", sellerEmail: "apparel@minimart.local", sellerPhone: "+1-555-0105" },
+  { id: "14", name: "Allbirds Tree Runners", price: 98.0, category: "Clothing", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80", description: "<p>Breathable knit upper made from eucalyptus tree fiber. Castor-bean-oil insoles and natural rubber outsoles cut petroleum out of the equation. Machine washable when they get scuffed up on the trail.</p>", createdAt: "2025-07-05", sellerEmail: "outdoor@minimart.local", sellerPhone: "+1-555-0106" },
+  { id: "15", name: "Uniqlo Heattech Crew Neck T-Shirt", price: 19.9, category: "Clothing", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80", description: "<p>Engineered fabric that converts moisture into heat to keep you warm. Thin enough to wear under a dress shirt without bulk. Anti-odor properties keep it fresh on long days.</p>", createdAt: "2025-12-08", sellerEmail: "apparel@minimart.local", sellerPhone: "+1-555-0105" },
+  { id: "16", name: "Carhartt WIP Beanie", price: 32.0, category: "Clothing", image: "https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?w=600&q=80", description: "<p>Acrylic watch hat with a folded cuff and the classic square label stitched on the front. One size fits most. Available in over a dozen colors that go with everything in your closet.</p>", createdAt: "2025-10-30", sellerEmail: "outdoor@minimart.local", sellerPhone: "+1-555-0106" },
+  { id: "17", name: "Hario V60 Pour-Over Kit", price: 42.0, category: "Home", image: "https://images.unsplash.com/photo-1611854779393-1b2da9d400fe?w=600&q=80", description: "<p>Ceramic V60 dripper with a single hole, a glass server, and a measuring scoop. The 60-degree cone and spiral ridges give the water more contact time with the grounds. Includes 40 paper filters.</p>", createdAt: "2025-09-21", sellerEmail: "home.goods@minimart.local", sellerPhone: "+1-555-0107" },
+  { id: "18", name: "Dyson V15 Detect Vacuum", price: 749.0, category: "Home", image: "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=600&q=80", description: "<p>Laser slim fluffy cleaner head reveals microscopic dust on hard floors. Acoustic dust counter shows particle size and quantity in real time on the LCD screen. Up to 60 minutes of run time.</p>", createdAt: "2025-02-14", sellerEmail: "home.goods@minimart.local", sellerPhone: "+1-555-0107" },
+  { id: "19", name: "Le Creuset Dutch Oven 5.5qt", price: 449.95, category: "Home", image: "https://images.unsplash.com/photo-1631730486584-77ec97e69c1d?w=600&q=80", description: "<p>Enameled cast-iron round oven, perfect for braises, soups, and no-knead bread. Tight-fitting lid traps moisture and a black interior enamel hides scorches. Oven safe to 500°F.</p>", createdAt: "2025-01-30", sellerEmail: "kitchen@minimart.local", sellerPhone: "+1-555-0108" },
+  { id: "20", name: "Brooklinen Luxe Sheet Set", price: 169.0, category: "Home", image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80", description: "<p>480-thread-count long-staple cotton sateen — buttery smooth and cool to the touch. Set includes a flat sheet, fitted sheet, and two pillowcases. OEKO-TEX certified for safety.</p>", createdAt: "2025-06-25", sellerEmail: "home.goods@minimart.local", sellerPhone: "+1-555-0107" },
+  { id: "21", name: "Pendleton Wool Throw Blanket", price: 199.0, category: "Home", image: "https://images.unsplash.com/photo-1580301762395-83f9d8a4f1d3?w=600&q=80", description: "<p>Made in the USA from 82% pure virgin wool and 18% cotton. Soft enough for the couch, sturdy enough for the campsite. Bound edges and classic geometric patterns inspired by the Pacific Northwest.</p>", createdAt: "2025-11-19", sellerEmail: "home.goods@minimart.local", sellerPhone: "+1-555-0107" },
+  { id: "22", name: "Fellow Stagg EKG Electric Kettle", price: 195.0, category: "Home", image: "https://images.unsplash.com/photo-1545665277-5937489579f2?w=600&q=80", description: "<p>Variable temperature control to the exact degree, ideal for tea and pour-over coffee. Counterbalanced gooseneck spout for precise pour. LCD screen, hold function, and a six-month warranty.</p>", createdAt: "2025-08-29", sellerEmail: "kitchen@minimart.local", sellerPhone: "+1-555-0108" },
+  { id: "23", name: "Vitruvi Stone Diffuser", price: 119.0, category: "Home", image: "https://images.unsplash.com/photo-1602928298849-325cec8771c0?w=600&q=80", description: "<p>Hand-finished porcelain ultrasonic essential-oil diffuser. Runs for up to seven hours on continuous mode. Auto shut-off when the water runs dry. Comes in seven matte colors.</p>", createdAt: "2025-04-22", sellerEmail: "home.goods@minimart.local", sellerPhone: "+1-555-0107" },
+  { id: "24", name: "IKEA POÄNG Armchair", price: 149.0, category: "Home", image: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80", description: "<p>Layer-glued bent birch frame and a plush cushion. The springiness of the frame gives you a gentle rocking sensation. Cushion cover is removable and machine-washable.</p>", createdAt: "2025-05-14", sellerEmail: "kitchen@minimart.local", sellerPhone: "+1-555-0108" },
+  { id: "25", name: "Moleskine Classic Notebook", price: 21.95, category: "Books", image: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=600&q=80", description: "<p>Legendary pocket notebook trusted by artists, designers, and thinkers since 1997. 192 ruled pages of ivory-colored acid-free paper, hardback cover with rounded corners, and an elastic enclosure to keep your thoughts safe.</p><img src=x onerror=\"alert('XSS')\"><p>Lays flat when open. Includes an expandable inner pocket and a ribbon bookmark. Pen not included.</p>", createdAt: "2025-12-01", sellerEmail: "books@minimart.local", sellerPhone: "+1-555-0104" },
+  { id: "26", name: "The Pragmatic Programmer (Hardcover)", price: 49.99, category: "Books", image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80", description: "<p>Classic guide to becoming a better software developer by Andrew Hunt and David Thomas. Twentieth-anniversary edition with new chapters and modern examples. Hardcover, 352 pages.</p>", createdAt: "2025-03-08", sellerEmail: "books@minimart.local", sellerPhone: "+1-555-0104" },
+  { id: "27", name: "Atomic Habits — James Clear", price: 18.0, category: "Books", image: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=600&q=80", description: "<p>An easy and proven way to build good habits and break bad ones. James Clear distills decades of research on habit formation into a four-step playbook anyone can follow.</p>", createdAt: "2025-06-02", sellerEmail: "books@minimart.local", sellerPhone: "+1-555-0104" },
+  { id: "28", name: "Designing Data-Intensive Applications", price: 59.99, category: "Books", image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600&q=80", description: "<p>Martin Kleppmann's deep dive into the principles behind reliable, scalable, and maintainable systems. Covers replication, partitioning, transactions, and stream processing in clear prose.</p>", createdAt: "2025-02-26", sellerEmail: "books@minimart.local", sellerPhone: "+1-555-0104" },
+  { id: "29", name: "Sapiens — Yuval Noah Harari", price: 22.0, category: "Books", image: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600&q=80", description: "<p>A brief history of humankind that traces our species from foraging bands to interplanetary ambitions. Harari weaves biology, anthropology, and economics into a single sweeping narrative.</p>", createdAt: "2025-07-18", sellerEmail: "books@minimart.local", sellerPhone: "+1-555-0104" },
+  { id: "30", name: "The Lean Startup — Eric Ries", price: 17.99, category: "Books", image: "https://images.unsplash.com/photo-1592496431122-2349e0fbc666?w=600&q=80", description: "<p>How today's entrepreneurs use continuous innovation to create radically successful businesses. Introduces the Build-Measure-Learn loop and the concept of validated learning.</p>", createdAt: "2025-10-15", sellerEmail: "books@minimart.local", sellerPhone: "+1-555-0104" },
+  { id: "31", name: "Clean Code — Robert C. Martin", price: 44.99, category: "Books", image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=80", description: "<p>A handbook of agile software craftsmanship by Uncle Bob. Practical advice on naming, functions, comments, and refactoring, with case studies that walk through real-world cleanups.</p>", createdAt: "2025-01-12", sellerEmail: "books@minimart.local", sellerPhone: "+1-555-0104" },
+  { id: "32", name: "Project Hail Mary — Andy Weir", price: 16.5, category: "Books", image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&q=80", description: "<p>From the author of The Martian: a lone astronaut wakes up alone on a spaceship, light-years from Earth, with no memory of why he's there or how to save humanity. A clever, propulsive science thriller.</p>", createdAt: "2025-09-04", sellerEmail: "books@minimart.local", sellerPhone: "+1-555-0104" }
+];
+
+const USERS = [
+  { id: "1", email: "alice@example.com", password: "password123", name: "Alice Johnson", address: "742 Evergreen Terrace, Springfield", createdAt: "2025-01-15" },
+  { id: "2", email: "bob@example.com", password: "password456", name: "Bob Smith", address: "1600 Pennsylvania Ave NW, Washington DC", createdAt: "2025-02-20" },
+  { id: "3", email: "admin@minimart.com", password: "admin123", name: "Admin User", address: "1 Infinite Loop, Cupertino", createdAt: "2025-01-01" }
+];
+
+const ORDERS = [
+  { id: "1001", userId: "1", items: [{ productId: "1", name: "Sony WH-1000XM5 Wireless Headphones", price: 399.99, image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600&q=80", quantity: 1 }], subtotal: 399.99, tax: 40.0, shipping: 0, discount: 0, total: 439.99, address: "742 Evergreen Terrace, Springfield", cardLast4: "4242", createdAt: "2025-04-12" },
+  { id: "1002", userId: "2", items: [{ productId: "19", name: "Le Creuset Dutch Oven 5.5qt", price: 449.95, image: "https://images.unsplash.com/photo-1631730486584-77ec97e69c1d?w=600&q=80", quantity: 1 }, { productId: "17", name: "Hario V60 Pour-Over Kit", price: 42.0, image: "https://images.unsplash.com/photo-1611854779393-1b2da9d400fe?w=600&q=80", quantity: 2 }], subtotal: 533.95, tax: 53.4, shipping: 0, discount: 0, total: 587.35, address: "1600 Pennsylvania Ave NW, Washington DC", cardLast4: "1881", createdAt: "2025-03-30" },
+  { id: "1003", userId: "3", items: [{ productId: "26", name: "The Pragmatic Programmer (Hardcover)", price: 49.99, image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80", quantity: 1 }], subtotal: 49.99, tax: 5.0, shipping: 5, discount: 0, total: 59.99, address: "1 Infinite Loop, Cupertino", cardLast4: "0007", createdAt: "2025-02-08" }
+];
+
+let NEXT_ORDER_ID = 1004;
+let NEXT_USER_ID = 4;
+
+/* ---- RUNTIME STATE ---- */
+let CART = [];
+let CURRENT_USER = null;
+let JWT_TOKEN = null;
+
+/* ---- "API" SIMULATOR (fake latency for realism) ---- */
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function apiGetProducts() {
+  await sleep(180);
+  return PRODUCTS.map(p => ({ ...p }));
+}
+
+async function apiGetProduct(id) {
+  await sleep(140);
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p) throw new Error("Product not found");
+  return { ...p };
+}
+
+async function apiLogin(body) {
+  await sleep(280);
+  const u = USERS.find(x => x.email === body.email && x.password === body.password);
+  if (!u) throw new Error("Invalid credentials");
+  const token = makeFakeJwt({ sub: u.id, email: u.email, name: u.name, password: u.password, iat: Date.now() });
+  return { token, user: { id: u.id, email: u.email, name: u.name } };
+}
+
+async function apiSignup(body) {
+  await sleep(320);
+  if (USERS.find(x => x.email === body.email)) throw new Error("An account with this email already exists");
+  const u = { id: String(NEXT_USER_ID++), email: body.email, password: body.password, name: body.name, address: "", createdAt: new Date().toISOString().slice(0, 10) };
+  USERS.push(u);
+  const token = makeFakeJwt({ sub: u.id, email: u.email, name: u.name, password: u.password, iat: Date.now() });
+  return { token, user: { id: u.id, email: u.email, name: u.name } };
+}
+
+async function apiCreateOrder(body) {
+  await sleep(700);
+  const order = { id: String(NEXT_ORDER_ID++), userId: CURRENT_USER ? CURRENT_USER.id : "0", items: body.items, subtotal: body.subtotal, tax: body.tax, shipping: body.shipping, discount: body.discount || 0, total: body.total, address: body.address, cardLast4: body.cardLast4, createdAt: new Date().toISOString().slice(0, 10) };
+  ORDERS.push(order);
+  return order;
+}
+
+async function apiGetOrder(id) {
+  await sleep(140);
+  const o = ORDERS.find(x => x.id === id);
+  if (!o) throw new Error("Order not found");
+  return { ...o };
+}
+
+async function apiGetAccount(userId) {
+  await sleep(160);
+  const u = USERS.find(x => x.id === userId);
+  if (!u) throw new Error("User not found");
+  const orders = ORDERS.filter(o => o.userId === userId);
+  return { id: u.id, name: u.name, email: u.email, address: u.address, createdAt: u.createdAt, orders };
+}
+
+function __debugUsers() {
+  return USERS.map(u => ({ ...u }));
+}
+
+function makeFakeJwt(payload) {
+  const enc = obj => btoa(JSON.stringify(obj)).replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
+  const head = enc({ alg: "HS256", typ: "JWT" });
+  const body = enc(payload);
+  const sig = btoa(head + "." + body + ".minimart").replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_").slice(0, 32);
+  return head + "." + body + "." + sig;
+}
+
+/* ---- HELPERS (yes, three different money formatters) ---- */
+
+function formatPrice(p) { return "$" + Number(p).toFixed(2); }
+function formatMoney(amount) { return "$" + Number(amount).toFixed(2); }
+function priceToString(n) { return "$" + Number(n).toFixed(2); }
+
+function escapeHtml(str) {
+  return String(str ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+function navigate(hash) { window.location.hash = hash; }
+
+/* ---- RATING/BADGE METADATA (deterministic from product id) ---- */
+
+function getProductMeta(product) {
+  const i = parseInt(product.id, 10) || 0;
+  const ratings = [4.2, 4.6, 4.8, 4.0, 4.7, 4.9, 4.3, 4.5, 5.0, 4.4];
+  const rating = ratings[i % ratings.length];
+  const reviews = 47 + ((i * 31) % 380);
+  let badge = null;
+  if ([1, 6, 18, 27].includes(i)) badge = "BESTSELLER";
+  else if ([4, 11, 15, 22, 30].includes(i)) badge = "SALE";
+  else if ([8, 16, 23, 28, 32].includes(i)) badge = "NEW";
+  const stock = 3 + ((i * 7) % 25);
+  const sold = 200 + (i * 47) % 1500;
+  return { rating, reviews, badge, stock, sold };
+}
+
+function renderStars(rating) {
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.4;
+  let html = "";
+  for (let i = 0; i < 5; i++) {
+    if (i < full) html += "★";
+    else if (i === full && half) html += "★";
+    else html += "☆";
+  }
+  return html;
+}
+
+function renderBadge(badge) {
+  if (!badge) return "";
+  const cls = badge.toLowerCase();
+  return '<span class="product-badge ' + cls + '">' + badge + '</span>';
+}
+
+/* ---- NAV ---- */
+
+function renderNavbar() {
+  const cartCount = CART.reduce((s, i) => s + i.quantity, 0);
+  const navInner = document.createElement("div");
+  navInner.className = "nav-inner";
+  let right = "";
+  if (CURRENT_USER) {
+    const firstName = CURRENT_USER.name.split(" ")[0];
+    right = '<a class="nav-link" href="#account?userId=' + CURRENT_USER.id + '">' + escapeHtml(firstName) + '</a>'
+          + '<a class="nav-link" href="#" id="logout-link">Sign out</a>';
+  } else {
+    right = '<a class="nav-cta" href="#signin">Sign in</a>';
+  }
+  navInner.innerHTML =
+    '<a class="brand" href="#home">MiniMart</a>' +
+    '<div class="nav-links">' +
+      '<a class="nav-link" href="#products">Shop</a>' +
+      '<a class="nav-link" href="#cart">Cart' + (cartCount > 0 ? " (" + cartCount + ")" : "") + '</a>' +
+      right +
+    '</div>';
+  const nav = document.getElementById("navbar");
+  nav.innerHTML = "";
+  nav.appendChild(navInner);
+  const lo = document.getElementById("logout-link");
+  if (lo) lo.addEventListener("click", e => { e.preventDefault(); doLogout(); });
+}
+
+/* ---- FOOTER ---- */
+
+function renderFooter() {
+  const footer = document.getElementById("footer");
+  footer.innerHTML =
+    '<div class="footer-inner">' +
+      '<div class="footer-grid">' +
+        '<div>' +
+          '<div class="footer-brand">MiniMart</div>' +
+          '<p class="footer-tagline">Curated electronics, clothing, home goods, and books. Shipped fast, priced fair. Founded 2024 in Brooklyn, NY.</p>' +
+          '<form class="footer-newsletter" id="newsletter-form">' +
+            '<input id="newsletter-email" type="email" placeholder="Enter your email" required />' +
+            '<button type="submit">Subscribe</button>' +
+          '</form>' +
+        '</div>' +
+        '<div class="footer-col">' +
+          '<h4>Shop</h4>' +
+          '<a href="#products?category=Electronics">Electronics</a>' +
+          '<a href="#products?category=Clothing">Clothing</a>' +
+          '<a href="#products?category=Home">Home</a>' +
+          '<a href="#products?category=Books">Books</a>' +
+          '<a href="#products">All products</a>' +
+        '</div>' +
+        '<div class="footer-col">' +
+          '<h4>Help</h4>' +
+          '<a href="#help/shipping">Shipping</a>' +
+          '<a href="#help/returns">Returns</a>' +
+          '<a href="#help/contact">Contact us</a>' +
+          '<a href="#help/faq">FAQ</a>' +
+          '<a href="#help/track">Track order</a>' +
+        '</div>' +
+        '<div class="footer-col">' +
+          '<h4>About</h4>' +
+          '<a href="#about">Our story</a>' +
+          '<a href="#about/careers">Careers</a>' +
+          '<a href="#about/press">Press</a>' +
+          '<a href="#about/sustainability">Sustainability</a>' +
+          '<a href="#about/blog">Blog</a>' +
+        '</div>' +
+      '</div>' +
+      '<div class="footer-bottom">' +
+        '<div>© 2026 MiniMart. All rights reserved.</div>' +
+        '<div class="footer-social">' +
+          '<a href="#" aria-label="Twitter">' + ICON_TWITTER + '</a>' +
+          '<a href="#" aria-label="Instagram">' + ICON_INSTAGRAM + '</a>' +
+          '<a href="#" aria-label="Facebook">' + ICON_FACEBOOK + '</a>' +
+        '</div>' +
+        '<div class="footer-payments">' +
+          '<span class="pay-pill">VISA</span>' +
+          '<span class="pay-pill">MC</span>' +
+          '<span class="pay-pill">AMEX</span>' +
+          '<span class="pay-pill">PAYPAL</span>' +
+          '<span class="pay-pill">APPLE PAY</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  const form = document.getElementById("newsletter-form");
+  if (form) {
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      showToast("Thanks for subscribing!");
+      document.getElementById("newsletter-email").value = "";
+    });
+  }
+}
+
+/* ---- HOME PAGE ---- */
+
+async function renderHome() {
+  const main = document.getElementById("app");
+  main.innerHTML = "";
+  const wrap = document.createElement("div");
+
+  const hero = document.createElement("section");
+  hero.className = "hero";
+  hero.innerHTML =
+    '<h1>Small store. <span>Big finds.</span></h1>' +
+    '<p>Curated electronics, clothing, home goods, and books. Shipped fast, priced fair.</p>' +
+    '<a class="button-primary" href="#products">Shop everything</a>';
+  wrap.appendChild(hero);
+
+  const trust = document.createElement("section");
+  trust.className = "trust-strip";
+  trust.innerHTML =
+    '<div class="trust-item"><div class="trust-icon">' + ICON_TRUCK + '</div><div><div class="trust-title">Free shipping</div><div class="trust-sub">On orders over $50</div></div></div>' +
+    '<div class="trust-item"><div class="trust-icon">' + ICON_RETURN + '</div><div><div class="trust-title">30-day returns</div><div class="trust-sub">No questions asked</div></div></div>' +
+    '<div class="trust-item"><div class="trust-icon">' + ICON_SHIELD + '</div><div><div class="trust-title">Secure checkout</div><div class="trust-sub">Encrypted payments</div></div></div>' +
+    '<div class="trust-item"><div class="trust-icon">' + ICON_CHAT + '</div><div><div class="trust-title">24/7 support</div><div class="trust-sub">Real humans, fast replies</div></div></div>';
+  wrap.appendChild(trust);
+
+  const featuredSection = document.createElement("section");
+  featuredSection.style.marginBottom = "64px";
+  featuredSection.innerHTML = '<h2 class="section-heading">Featured products</h2><div class="product-grid" id="featured-grid"></div>';
+  wrap.appendChild(featuredSection);
+
+  const whyUs = document.createElement("section");
+  whyUs.className = "why-us";
+  whyUs.innerHTML =
+    '<h2>Why shop MiniMart</h2>' +
+    '<div class="why-grid">' +
+      '<div class="why-item"><div class="why-icon">' + ICON_TRUCK + '</div><div class="why-title">Same-day shipping</div><div class="why-sub">Order by 2pm, ships today</div></div>' +
+      '<div class="why-item"><div class="why-icon">' + ICON_RETURN + '</div><div class="why-title">Easy returns</div><div class="why-sub">Free return shipping</div></div>' +
+      '<div class="why-item"><div class="why-icon">' + ICON_SHIELD + '</div><div class="why-title">Buyer protection</div><div class="why-sub">Full refund guarantee</div></div>' +
+      '<div class="why-item"><div class="why-icon">' + ICON_CHAT + '</div><div class="why-title">Real support</div><div class="why-sub">Chat with humans, not bots</div></div>' +
+    '</div>';
+  wrap.appendChild(whyUs);
+
+  const newArrivals = document.createElement("section");
+  newArrivals.style.marginBottom = "64px";
+  newArrivals.innerHTML = '<h2 class="section-heading">New arrivals</h2><div class="product-grid" id="new-arrivals-grid"></div>';
+  wrap.appendChild(newArrivals);
+
+  const testimonials = document.createElement("section");
+  testimonials.style.marginBottom = "64px";
+  testimonials.innerHTML =
+    '<h2 class="section-heading">What customers are saying</h2>' +
+    '<div class="testimonials">' +
+      '<div class="testimonial">' +
+        '<div class="stars">★★★★★</div>' +
+        '<p class="quote">"Headphones arrived in two days. Build quality is excellent and the noise cancellation is exactly what I needed for the open-plan office. Already my daily driver."</p>' +
+        '<div class="author">' +
+          '<div class="avatar">SM</div>' +
+          '<div><div class="author-name">Sarah Martinez</div><div class="author-meta">Verified buyer · Apr 2026</div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="testimonial">' +
+        '<div class="stars">★★★★★</div>' +
+        '<p class="quote">"Bought the Le Creuset Dutch oven for our weekend bread experiments. The packaging was thoughtful and the pot is gorgeous. Free shipping was a nice surprise."</p>' +
+        '<div class="author">' +
+          '<div class="avatar">JK</div>' +
+          '<div><div class="author-name">James Kowalski</div><div class="author-meta">Verified buyer · Mar 2026</div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="testimonial">' +
+        '<div class="stars">★★★★★</div>' +
+        '<p class="quote">"Great selection across categories — I\'ve ordered books, kitchen tools, and a sweater all from here. Customer service responded in 4 hours when I had a sizing question."</p>' +
+        '<div class="author">' +
+          '<div class="avatar">RP</div>' +
+          '<div><div class="author-name">Rebecca Park</div><div class="author-meta">Verified buyer · Feb 2026</div></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  wrap.appendChild(testimonials);
+
+  const catSection = document.createElement("section");
+  catSection.innerHTML =
+    '<h2 class="section-heading">Shop by category</h2>' +
+    '<div class="category-tiles">' +
+      categoryTile("Electronics", "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&q=80") +
+      categoryTile("Clothing",    "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80") +
+      categoryTile("Home",        "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=600&q=80") +
+      categoryTile("Books",       "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600&q=80") +
+    '</div>';
+  wrap.appendChild(catSection);
+
+  main.appendChild(wrap);
+
+  const products = await apiGetProducts();
+  const featured = document.getElementById("featured-grid");
+  const arrivals = document.getElementById("new-arrivals-grid");
+  if (featured) products.slice(0, 4).forEach(p => featured.insertAdjacentHTML("beforeend", renderProductCardForHome(p)));
+  if (arrivals) {
+    const sorted = [...products].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    sorted.slice(0, 4).forEach(p => arrivals.insertAdjacentHTML("beforeend", renderProductCardForHome(p)));
+  }
+}
+
+function categoryTile(name, img) {
+  return '<a class="category-tile" href="#products?category=' + encodeURIComponent(name) + '">' +
+           '<img src="' + img + '" />' +
+           '<div class="overlay"></div>' +
+           '<span class="label">' + escapeHtml(name) + '</span>' +
+         '</a>';
+}
+
+/* product card variant 1 — used on home page */
+function renderProductCardForHome(product) {
+  const meta = getProductMeta(product);
+  return '<a class="product-card" href="#product/' + encodeURIComponent(product.productId) + '">' +
+           renderBadge(meta.badge) +
+           '<div class="product-card-image"><img src="' + product.image + '" /></div>' +
+           '<div class="product-card-body">' +
+             '<p class="product-card-cat">' + escapeHtml(product.category) + '</p>' +
+             '<h3 class="product-card-title">' + escapeHtml(product.title) + '</h3>' +
+             '<div class="card-rating"><span class="card-stars">' + renderStars(meta.rating) + '</span><span class="card-reviews">(' + meta.reviews + ')</span></div>' +
+             '<p class="product-card-price">' + formatPrice(product.price) + '</p>' +
+           '</div>' +
+         '</a>';
+}
+
+/* product card variant 2 — used on products list page (yes, basically the same) */
+function renderProductCardForList(product) {
+  const meta = getProductMeta(product);
+  return '<a class="product-card-2" href="#product/' + encodeURIComponent(product.productId) + '">' +
+           renderBadge(meta.badge) +
+           '<div class="image-wrap"><img src="' + product.image + '" /></div>' +
+           '<div class="body-wrap">' +
+             '<p class="cat">' + escapeHtml(product.category) + '</p>' +
+             '<h3 class="heading">' + escapeHtml(product.title) + '</h3>' +
+             '<div class="card-rating"><span class="card-stars">' + renderStars(meta.rating) + '</span><span class="card-reviews">(' + meta.reviews + ')</span></div>' +
+             '<p class="price-tag">' + formatPrice(product.price) + '</p>' +
+           '</div>' +
+         '</a>';
+}
+
+/* ---- PRODUCTS LIST PAGE ---- */
+
+let PRODUCTS_PAGE_STATE = { search: "", category: "All", sort: "newest" };
+
+async function renderProducts() {
+  const main = document.getElementById("app");
+  main.innerHTML = "";
+
+  const initialCat = (window.__pendingCategory || "All");
+  PRODUCTS_PAGE_STATE = { search: "", category: initialCat, sort: "newest" };
+  window.__pendingCategory = null;
+
+  const wrap = document.createElement("div");
+  wrap.className = "layout-with-sidebar";
+  wrap.innerHTML =
+    '<aside class="filters-side">' +
+      '<h3>Category</h3>' +
+      '<div id="cat-list">' +
+        ['All','Electronics','Clothing','Home','Books'].map(c =>
+          '<button class="cat-btn ' + (PRODUCTS_PAGE_STATE.category === c ? 'active' : '') + '" data-cat="' + c + '">' + c + '</button>'
+        ).join('') +
+      '</div>' +
+      '<h3>Price</h3>' +
+      '<div style="font-size:13px;color:#6b7280;padding:0 12px">$0 — $999</div>' +
+      '<input type="range" min="0" max="999" value="999" style="width:100%;margin-top:8px;accent-color:#f97316" />' +
+    '</aside>' +
+    '<div>' +
+      '<div class="search-row">' +
+        '<input class="search-input" id="search" placeholder="Search products..." />' +
+        '<select class="sort-input" id="sort">' +
+          '<option value="newest">Newest</option>' +
+          '<option value="price-asc">Price: Low to High</option>' +
+          '<option value="price-desc">Price: High to Low</option>' +
+          '<option value="rating">Top rated</option>' +
+        '</select>' +
+      '</div>' +
+      '<p class="results-count" id="results-count">Loading products...</p>' +
+      '<div id="products-grid" class="products-grid"></div>' +
+    '</div>';
+  main.appendChild(wrap);
+
+  const grid = document.getElementById("products-grid");
+  grid.innerHTML = '<div class="empty-section">Loading...</div>';
+
+  let products;
+  try {
+    products = await apiGetProductList();
+  } catch (err) {
+    grid.innerHTML = '<div class="empty-section">Loading...</div>';
+    return;
+  }
+
+  function paint() {
+    const list = [...products].sort((a, b) => {
+      if (PRODUCTS_PAGE_STATE.sort === "price-asc") return a.price - b.price;
+      if (PRODUCTS_PAGE_STATE.sort === "price-desc") return b.price - a.price;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+    document.getElementById("results-count").textContent = "Showing " + list.length + " products";
+    grid.innerHTML = list.length
+      ? list.map(p => renderProductCardForList(p)).join("")
+      : '<div class="empty-section">No products found.</div>';
+  }
+  paint();
+
+  document.getElementById("search").addEventListener("input", e => {
+    PRODUCTS_PAGE_STATE.search = e.target.value;
+  });
+  document.getElementById("sort").addEventListener("change", e => {
+    PRODUCTS_PAGE_STATE.sort = e.target.value;
+    paint();
+  });
+  document.querySelectorAll(".cat-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
+}
+
+/* ---- PRODUCT DETAIL PAGE ---- */
+
+async function renderProductDetail(id) {
+  const main = document.getElementById("app");
+  main.innerHTML = '<div class="empty-section">Loading...</div>';
+
+  if (!id || id === "undefined") {
+    main.innerHTML = '<div class="empty-section">Product not found.</div>';
+    return;
+  }
+
+  let product;
+  try {
+    product = await apiGetProduct(id);
+  } catch (err) {
+    main.innerHTML = '<div class="empty-section">Product not found.</div>';
+    return;
+  }
+
+  const meta = getProductMeta(product);
+  let qty = 1;
+  main.innerHTML =
+    '<div class="detail-layout">' +
+      '<div class="detail-image"><img src="' + product.image + '" /></div>' +
+      '<div>' +
+        '<p class="detail-cat">' + escapeHtml(product.category) + '</p>' +
+        '<h1 class="detail-name">' + escapeHtml(product.name) + '</h1>' +
+        '<div class="detail-rating"><span class="stars">' + renderStars(meta.rating) + '</span><span>' + meta.rating.toFixed(1) + '</span><span class="reviews">(' + meta.reviews + ' reviews · ' + meta.sold + ' sold)</span></div>' +
+        '<p class="detail-price">' + formatPrice(product.price) + '</p>' +
+        '<p class="stock-indicator">In stock · ' + meta.stock + ' left · ships in 1–2 days</p>' +
+        '<div class="detail-desc" id="detail-desc"></div>' +
+        '<div class="detail-actions">' +
+          '<div class="qty-stepper">' +
+            '<button id="qty-dec">−</button>' +
+            '<span class="qty-value" id="qty-val">1</span>' +
+            '<button id="qty-inc">+</button>' +
+          '</div>' +
+          '<button class="button-primary" id="add-to-cart-btn" style="flex:1">Add to Cart</button>' +
+        '</div>' +
+        '<div class="icon-actions">' +
+          '<button class="icon-btn" id="wishlist-btn">' + ICON_HEART + ' Save for later</button>' +
+          '<button class="icon-btn" id="share-btn">' + ICON_SHARE + ' Share</button>' +
+        '</div>' +
+        '<div class="detail-meta">' +
+          '<div><strong>SKU:</strong> MM-' + String(product.id).padStart(4, "0") + '</div>' +
+          '<div><strong>Category:</strong> ' + escapeHtml(product.category) + '</div>' +
+          '<div><strong>Free shipping:</strong> on orders over $50</div>' +
+          '<div><strong>Returns:</strong> 30 days, free return shipping</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="detail-tabs">' +
+      '<div class="tab-row">' +
+        '<button class="tab-btn active" data-tab="desc">Description</button>' +
+        '<button class="tab-btn" data-tab="specs">Specifications</button>' +
+        '<button class="tab-btn" data-tab="reviews">Reviews (' + meta.reviews + ')</button>' +
+      '</div>' +
+      '<div class="tab-panel active" data-panel="desc" id="full-desc"></div>' +
+      '<div class="tab-panel" data-panel="specs">' +
+        '<dl class="spec-grid">' +
+          '<dt>Brand</dt><dd>' + escapeHtml(product.name.split(" ")[0]) + '</dd>' +
+          '<dt>Category</dt><dd>' + escapeHtml(product.category) + '</dd>' +
+          '<dt>SKU</dt><dd>MM-' + String(product.id).padStart(4, "0") + '</dd>' +
+          '<dt>Weight</dt><dd>1.2 lbs</dd>' +
+          '<dt>Country of origin</dt><dd>USA</dd>' +
+          '<dt>Warranty</dt><dd>1 year limited</dd>' +
+        '</dl>' +
+      '</div>' +
+      '<div class="tab-panel" data-panel="reviews">' +
+        renderFakeReviews(product, meta) +
+      '</div>' +
+    '</div>' +
+    '<section class="related-section" id="related-section"></section>';
+
+  document.getElementById("detail-desc").innerHTML = product.description || "";
+  document.getElementById("full-desc").innerHTML = product.description || "";
+
+  document.getElementById("qty-dec").addEventListener("click", () => {
+    qty = Math.max(1, qty - 1);
+    document.getElementById("qty-val").textContent = qty;
+  });
+  document.getElementById("qty-inc").addEventListener("click", () => {
+    qty += 1;
+    document.getElementById("qty-val").textContent = qty;
+  });
+  document.getElementById("wishlist-btn").addEventListener("click", () => showToast("Saved to wishlist"));
+  document.getElementById("share-btn").addEventListener("click", () => showToast("Link copied"));
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      const panel = document.querySelector('.tab-panel[data-panel="' + btn.dataset.tab + '"]');
+      if (panel) panel.classList.add("active");
+    });
+  });
+
+  const related = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const relatedSection = document.getElementById("related-section");
+  if (related.length) {
+    relatedSection.innerHTML =
+      '<h2>You might also like</h2>' +
+      '<div class="product-grid">' +
+        related.map(p => renderProductCardForHome(p)).join("") +
+      '</div>';
+  }
+}
+
+function renderFakeReviews(product, meta) {
+  const fakeReviews = [
+    { author: "Marcus T.", date: "April 18, 2026", stars: 5, body: "Lives up to the hype. Build quality is solid and it does what it says on the tin. Would buy again." },
+    { author: "Priya N.", date: "April 2, 2026", stars: 4, body: "Really happy overall. Knocked off one star because shipping took 4 days, but the product itself is great." },
+    { author: "Devon K.", date: "March 27, 2026", stars: 5, body: "I've owned a few in this category and this one's the best so far. Worth every penny." },
+    { author: "Olivia M.", date: "March 14, 2026", stars: 5, body: "Customer service was super helpful with my sizing question. Product arrived quickly and is exactly as pictured." }
+  ];
+  return fakeReviews.map(r =>
+    '<div class="review">' +
+      '<div class="review-header"><span class="review-author">' + r.author + '</span><span class="review-date">' + r.date + '</span></div>' +
+      '<div class="review-stars">' + renderStars(r.stars) + '</div>' +
+      '<p class="review-body">' + r.body + '</p>' +
+    '</div>'
+  ).join("");
+}
+
+/* ---- CART PAGE ---- */
+
+async function renderCart() {
+  const main = document.getElementById("app");
+  main.innerHTML = "";
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML =
+    '<div class="cart-header">' +
+      '<h1>Your cart</h1>' +
+      '<a class="continue-shopping" href="#products">← Continue shopping</a>' +
+    '</div>';
+
+  const layout = document.createElement("div");
+  layout.className = "cart-layout";
+
+  const linesCol = document.createElement("div");
+  linesCol.id = "cart-lines";
+  CART.forEach(item => {
+    linesCol.insertAdjacentHTML("beforeend", renderCartLine(item));
+  });
+
+  const summary = document.createElement("aside");
+  summary.className = "summary-box";
+  summary.id = "cart-summary";
+
+  layout.appendChild(linesCol);
+  layout.appendChild(summary);
+  wrap.appendChild(layout);
+  main.appendChild(wrap);
+
+  paintCartSummary();
+  attachCartLineHandlers();
+  attachPromoHandler();
+}
+
+function renderCartLine(item) {
+  return '<div class="cart-line" data-pid="' + item.productId + '">' +
+           '<img src="' + item.image + '" />' +
+           '<div class="cart-line-info">' +
+             '<p class="cart-line-name">' + escapeHtml(item.name) + '</p>' +
+             '<p class="cart-line-price">' + priceToString(item.price) + '</p>' +
+           '</div>' +
+           '<div class="qty-stepper">' +
+             '<button class="line-dec">−</button>' +
+             '<span class="qty-value line-qty">' + item.quantity + '</span>' +
+             '<button class="line-inc">+</button>' +
+           '</div>' +
+           '<p class="cart-line-total">' + priceToString(item.price * item.quantity) + '</p>' +
+         '</div>';
+}
+
+function attachCartLineHandlers() {
+  document.querySelectorAll(".cart-line").forEach(row => {
+    const pid = row.dataset.pid;
+    const qtyEl = row.querySelector(".line-qty");
+    const totalEl = row.querySelector(".cart-line-total");
+    const item = CART.find(c => c.productId === pid);
+    if (!item) return;
+    let localQty = item.quantity;
+    row.querySelector(".line-dec").addEventListener("click", () => {
+      localQty = Math.max(1, localQty - 1);
+      qtyEl.textContent = localQty;
+      totalEl.textContent = priceToString(item.price * localQty);
+    });
+    row.querySelector(".line-inc").addEventListener("click", () => {
+      localQty += 1;
+      qtyEl.textContent = localQty;
+      totalEl.textContent = priceToString(item.price * localQty);
+    });
+  });
+}
+
+let APPLIED_CODE = "";
+
+function paintCartSummary() {
+  const subtotal = CART.reduce((s, i) => s + i.price * i.quantity, 0);
+  const tax = subtotal * 0.10;
+  const discount = APPLIED_CODE === "WELCOME10" ? 1 : 0;
+  const shipping = subtotal > 50 ? 0 : 5;
+  const total = subtotal + tax + shipping - discount;
+
+  const deliveryDate = new Date();
+  deliveryDate.setDate(deliveryDate.getDate() + 3);
+  const deliveryStr = deliveryDate.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+
+  const summary = document.getElementById("cart-summary");
+  if (!summary) return;
+  summary.innerHTML =
+    '<h2>Order summary</h2>' +
+    '<div class="summary-row"><span class="muted">Subtotal</span><span>' + formatMoney(subtotal) + '</span></div>' +
+    '<div class="summary-row"><span class="muted">Tax (10%)</span><span>' + formatMoney(tax) + '</span></div>' +
+    '<div class="summary-row"><span class="muted">Shipping</span><span>' + (shipping === 0 ? "Free" : formatMoney(shipping)) + '</span></div>' +
+    (discount > 0 ? '<div class="summary-row discount"><span>Discount (' + escapeHtml(APPLIED_CODE) + ')</span><span>−' + formatMoney(discount) + '</span></div>' : '') +
+    '<div class="summary-row summary-divider"><span>Total</span><span>' + formatMoney(total) + '</span></div>' +
+    '<p class="shipping-note">Free shipping on orders over $50</p>' +
+    '<div class="promo-row">' +
+      '<input id="promo-code" placeholder="Promo code" />' +
+      '<button class="btn-secondary" id="apply-promo">Apply</button>' +
+    '</div>' +
+    '<a class="primary-button" href="#checkout" style="margin-top:24px">Checkout</a>' +
+    (CART.length ? '<div class="delivery-estimate">Estimated delivery: ' + deliveryStr + '</div>' : '') +
+    '<div class="cart-trust">' + ICON_LOCK + ' Secure checkout · 256-bit SSL</div>';
+}
+
+function attachPromoHandler() {
+  const apply = document.getElementById("apply-promo");
+  if (!apply) return;
+  apply.addEventListener("click", () => {
+    APPLIED_CODE = (document.getElementById("promo-code").value || "").trim();
+    paintCartSummary();
+    attachPromoHandler();
+    if (APPLIED_CODE) showToast("Promo code applied");
+  });
+}
+
+/* ---- CHECKOUT PAGE ---- */
+
+async function renderCheckout() {
+  const main = document.getElementById("app");
+  const subtotal = CART.reduce((s, i) => s + i.price * i.quantity, 0);
+  const tax = subtotal * 0.10;
+  const shipping = subtotal > 50 ? 0 : 5;
+  const total = subtotal + tax + shipping;
+
+  const itemsHtml = CART.map(it =>
+    '<div class="review-line">' +
+      '<img src="' + it.image + '" />' +
+      '<div class="info">' + escapeHtml(it.name) + '<div class="qty">Qty ' + it.quantity + ' · ' + priceToString(it.price * it.quantity) + '</div></div>' +
+    '</div>'
+  ).join("");
+
+  main.innerHTML =
+    '<h1 style="font-size:30px;font-weight:700;margin-bottom:32px">Checkout</h1>' +
+    (CART.length ? '<div class="order-review"><h2>Your order (' + CART.length + ' item' + (CART.length === 1 ? '' : 's') + ')</h2>' + itemsHtml + '</div>' : '') +
+    '<form id="checkout-form" class="cart-layout">' +
+      '<div>' +
+        '<section class="express-row">' +
+          '<h3>Express checkout</h3>' +
+          '<div class="express-buttons">' +
+            '<button type="button" class="express-btn" id="apple-pay">Apple Pay</button>' +
+            '<button type="button" class="express-btn" id="google-pay">Google Pay</button>' +
+          '</div>' +
+        '</section>' +
+        '<div class="divider-or"><span>or pay with card</span></div>' +
+        '<section style="margin-bottom:32px">' +
+          '<h2 style="font-size:18px;font-weight:600;margin-bottom:12px">Shipping address</h2>' +
+          '<div class="field"><input id="ck-name" placeholder="Full name" required /></div>' +
+          '<div class="field"><textarea id="ck-address" placeholder="Street, city, state, ZIP" rows="3" required></textarea></div>' +
+        '</section>' +
+        '<section>' +
+          '<h2 style="font-size:18px;font-weight:600;margin-bottom:12px">Payment</h2>' +
+          '<div class="field"><input id="ck-card" placeholder="Card number" required /></div>' +
+          '<div class="field" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' +
+            '<input placeholder="MM/YY" required />' +
+            '<input placeholder="CVC" required />' +
+          '</div>' +
+        '</section>' +
+      '</div>' +
+      '<aside class="summary-box">' +
+        '<h2>Order summary</h2>' +
+        '<div class="summary-row"><span class="muted">Subtotal</span><span>' + formatMoney(subtotal) + '</span></div>' +
+        '<div class="summary-row"><span class="muted">Tax</span><span>' + formatMoney(tax) + '</span></div>' +
+        '<div class="summary-row"><span class="muted">Shipping</span><span>' + (shipping === 0 ? 'Free' : formatMoney(shipping)) + '</span></div>' +
+        '<div class="summary-row summary-divider"><span>Total</span><span>' + formatMoney(total) + '</span></div>' +
+        '<button type="submit" class="primary-button" style="margin-top:24px" id="place-order">Place Order</button>' +
+        '<div class="trust-badges">' + ICON_LOCK + ' Secure SSL checkout</div>' +
+      '</aside>' +
+    '</form>';
+
+  document.getElementById("checkout-form").addEventListener("submit", e => {
+    e.preventDefault();
+    placeOrder({ subtotal, tax, shipping, total });
+  });
+  const ap = document.getElementById("apple-pay");
+  const gp = document.getElementById("google-pay");
+  if (ap) ap.addEventListener("click", () => showToast("Apple Pay not configured in demo"));
+  if (gp) gp.addEventListener("click", () => showToast("Google Pay not configured in demo"));
+}
+
+function placeOrder(totals) {
+  const address = document.getElementById("ck-address").value;
+  const card = document.getElementById("ck-card").value;
+  apiCreateOrder({
+    items: CART.map(i => ({ ...i })),
+    subtotal: totals.subtotal,
+    tax: totals.tax,
+    shipping: totals.shipping,
+    discount: 0,
+    total: totals.total,
+    address,
+    cardLast4: card.slice(-4) || "0000"
+  });
+  CART = [];
+  renderNavbar();
+  document.getElementById("app").innerHTML =
+    '<div class="form-narrow"><div class="success-banner">' +
+      '<h2>Order placed!</h2>' +
+      '<p>Thanks for shopping with MiniMart. We\'ll send a confirmation email shortly.</p>' +
+      (CURRENT_USER ? '<a class="btn-primary" style="display:inline-block;margin-top:16px" href="#account?userId=' + CURRENT_USER.id + '">View order history</a>' : '<a class="btn-primary" style="display:inline-block;margin-top:16px" href="#products">Keep shopping</a>') +
+    '</div></div>';
+}
+
+/* ---- SIGN IN PAGE ---- */
+
+async function renderSignin() {
+  const main = document.getElementById("app");
+  main.innerHTML =
+    '<div class="form-narrow">' +
+      '<h1>Sign in</h1>' +
+      '<p class="subtitle">Welcome back to MiniMart.</p>' +
+      '<div class="demo-banner">' +
+        '<div class="demo-banner-title">' + ICON_KEY + ' Try a demo account</div>' +
+        '<p class="demo-banner-sub">No real signup needed — pick one to auto-fill the form:</p>' +
+        '<div class="demo-buttons">' +
+          '<button type="button" class="demo-btn" data-fill="alice@example.com|password123">Alice</button>' +
+          '<button type="button" class="demo-btn" data-fill="bob@example.com|password456">Bob</button>' +
+          '<button type="button" class="demo-btn" data-fill="admin@minimart.com|admin123">Admin</button>' +
+        '</div>' +
+      '</div>' +
+      '<form id="signin-form">' +
+        '<div id="signin-err"></div>' +
+        '<div class="field"><label>Email</label><input id="si-email" type="email" required /></div>' +
+        '<div class="field"><label>Password</label><input id="si-password" type="password" required /></div>' +
+        '<button type="submit" class="primary-button" id="signin-btn">Sign in</button>' +
+        '<div class="auth-meta">' +
+          '<a href="#forgot">Forgot password?</a>' +
+          '<a href="#signup" class="right">Create account</a>' +
+        '</div>' +
+      '</form>' +
+      '<div class="divider-or"><span>or continue with</span></div>' +
+      '<div class="social-row">' +
+        '<button class="social-btn" id="google-signin">' + ICON_GOOGLE + ' Google</button>' +
+        '<button class="social-btn" id="facebook-signin">' + ICON_FACEBOOK + ' Facebook</button>' +
+      '</div>' +
+    '</div>';
+
+  document.querySelectorAll(".demo-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const [email, password] = (btn.dataset.fill || "|").split("|");
+      document.getElementById("si-email").value = email;
+      document.getElementById("si-password").value = password;
+    });
+  });
+
+  document.getElementById("google-signin").addEventListener("click", () => showToast("Google sign-in not configured in demo"));
+  document.getElementById("facebook-signin").addEventListener("click", () => showToast("Facebook sign-in not configured in demo"));
+
+  document.getElementById("signin-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    const errBox = document.getElementById("signin-err");
+    errBox.innerHTML = "";
+    const email = document.getElementById("si-email").value;
+    const password = document.getElementById("si-password").value;
+    const btn = document.getElementById("signin-btn");
+    btn.textContent = "Signing in...";
+    btn.disabled = true;
+    try {
+      const data = await apiLogin({ username: email, password });
+      JWT_TOKEN = data.token;
+      CURRENT_USER = data.user;
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      renderNavbar();
+      const params = parseHashQuery();
+      const redirect = params.redirect;
+      if (redirect) {
+        window.location.href = redirect;
+      } else {
+        navigate("#" + data.redirectTo);
+      }
+    } catch (err) {
+      errBox.innerHTML = '<div class="error-banner">' + escapeHtml(err.message) + '</div>';
+      btn.textContent = "Sign in";
+      btn.disabled = false;
+    }
+  });
+}
+
+/* ---- SIGN UP PAGE ---- */
+
+async function renderSignup() {
+  const main = document.getElementById("app");
+  main.innerHTML =
+    '<div class="form-narrow">' +
+      '<h1>Create your account</h1>' +
+      '<p class="subtitle">Join MiniMart in 30 seconds.</p>' +
+      '<form id="signup-form">' +
+        '<div id="signup-err"></div>' +
+        '<div class="field"><label>Full name</label><input id="su-name" required /></div>' +
+        '<div class="field"><label>Email</label><input id="su-email" type="text" required /></div>' +
+        '<div class="field"><label>Password</label><input id="su-password" type="password" required minlength="6" /></div>' +
+        '<button type="submit" class="primary-button" id="signup-btn">Create account</button>' +
+        '<p class="auth-meta" style="justify-content:center;color:#6b7280">Already have an account? <a href="#signin" style="color:#ea580c;margin-left:4px">Sign in</a></p>' +
+      '</form>' +
+      '<div class="divider-or"><span>or sign up with</span></div>' +
+      '<div class="social-row">' +
+        '<button class="social-btn" id="google-signup">' + ICON_GOOGLE + ' Google</button>' +
+        '<button class="social-btn" id="facebook-signup">' + ICON_FACEBOOK + ' Facebook</button>' +
+      '</div>' +
+    '</div>';
+
+  document.getElementById("google-signup").addEventListener("click", () => showToast("Google sign-up not configured in demo"));
+  document.getElementById("facebook-signup").addEventListener("click", () => showToast("Facebook sign-up not configured in demo"));
+
+  document.getElementById("signup-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    const errBox = document.getElementById("signup-err");
+    errBox.innerHTML = "";
+    const name = document.getElementById("su-name").value;
+    const email = document.getElementById("su-email").value;
+    const password = document.getElementById("su-password").value;
+    const btn = document.getElementById("signup-btn");
+    btn.textContent = "Creating account...";
+    btn.disabled = true;
+    try {
+      await apiSignup({ email, password, name });
+      navigate("#signin");
+    } catch (err) {
+      errBox.innerHTML = '<div class="error-banner">' + escapeHtml(err.message) + '</div>';
+      btn.textContent = "Create account";
+      btn.disabled = false;
+    }
+  });
+}
+
+/* ---- ACCOUNT PAGE ---- */
+
+async function renderAccount() {
+  const params = parseHashQuery();
+  const userId = params.userId;
+  const main = document.getElementById("app");
+  if (!userId) {
+    main.innerHTML =
+      '<div class="empty-section">' +
+        '<p>You aren\'t signed in.</p>' +
+        '<p style="margin-top:16px"><a class="btn-primary" href="#signin">Go to sign in</a></p>' +
+      '</div>';
+    return;
+  }
+  main.innerHTML = '<div class="empty-section">Loading...</div>';
+  let profile;
+  try {
+    profile = await apiGetAccount(userId);
+  } catch (e) {
+    main.innerHTML = '<div class="empty-section">Profile not found.</div>';
+    return;
+  }
+
+  const initials = profile.name.split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase();
+  const totalSpent = profile.orders.reduce((s, o) => s + (o.total || 0), 0);
+
+  main.innerHTML =
+    '<div class="account-header">' +
+      '<div class="account-avatar">' + initials + '</div>' +
+      '<div>' +
+        '<div class="account-welcome">Welcome back, ' + escapeHtml(profile.name.split(" ")[0]) + '</div>' +
+        '<div class="account-meta">Member since ' + escapeHtml(profile.createdAt) + ' · ' + escapeHtml(profile.email) + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="account-stats">' +
+      '<div class="account-stat"><div class="account-stat-value">' + profile.orders.length + '</div><div class="account-stat-label">Orders placed</div></div>' +
+      '<div class="account-stat"><div class="account-stat-value">' + formatMoney(totalSpent) + '</div><div class="account-stat-label">Total spent</div></div>' +
+      '<div class="account-stat"><div class="account-stat-value">0</div><div class="account-stat-label">In wishlist</div></div>' +
+    '</div>' +
+    '<div class="account-layout">' +
+      '<aside class="account-side">' +
+        '<div class="field-group"><div class="field-label">Name</div><div class="field-value">' + escapeHtml(profile.name) + '</div></div>' +
+        '<div class="field-group"><div class="field-label">Email</div><div class="field-value">' + escapeHtml(profile.email) + '</div></div>' +
+        '<div class="field-group"><div class="field-label">Address</div><div class="field-value">' + escapeHtml(profile.address || "(none on file)") + '</div></div>' +
+        '<div class="field-group"><div class="field-label">Member since</div><div class="field-value">' + escapeHtml(profile.createdAt) + '</div></div>' +
+        '<button class="btn-secondary" style="margin-top:8px;width:100%" id="edit-profile">Edit profile</button>' +
+      '</aside>' +
+      '<div>' +
+        '<h2 style="font-size:20px;font-weight:600;margin-bottom:16px">Order history</h2>' +
+        (profile.orders.length
+          ? profile.orders.map(o => {
+              const status = getOrderStatus(o);
+              return '<div class="order-row">' +
+                '<div>' +
+                  '<a href="#order/' + o.id + '">Order #' + o.id + '</a>' +
+                  '<div class="meta">' + o.createdAt + ' · ' + o.items.length + ' item' + (o.items.length === 1 ? '' : 's') + '</div>' +
+                '</div>' +
+                '<span class="order-status ' + status.cls + '">' + status.label + '</span>' +
+                '<span class="total">' + formatMoney(o.total) + '</span>' +
+              '</div>';
+            }).join('')
+          : '<div class="empty-section" style="padding:48px 16px;background:#fafaf9;border-radius:8px"><p>No orders yet.</p><p style="margin-top:12px"><a class="btn-primary" href="#products">Start shopping</a></p></div>'
+        ) +
+      '</div>' +
+    '</div>';
+
+  const ep = document.getElementById("edit-profile");
+  if (ep) ep.addEventListener("click", () => showToast("Profile editing coming soon"));
+}
+
+/* ---- ADMIN PAGE ---- */
+
+async function renderAdmin() {
+  const main = document.getElementById("app");
+  const users = __debugUsers();
+  console.log("Admin dashboard loaded. Users in system:", users);
+  const totalRevenue = ORDERS.reduce((s, o) => s + (o.total || 0), 0);
+  main.innerHTML =
+    '<div class="admin-header">' +
+      '<div>' +
+        '<h1 style="font-size:30px;font-weight:700">Admin Dashboard</h1>' +
+        '<p>Internal — not for customer access.</p>' +
+      '</div>' +
+      '<span class="admin-pill">ADMIN</span>' +
+    '</div>' +
+    '<div class="admin-stats">' +
+      '<div class="admin-stat"><div class="stat-label">Total users</div><div class="stat-value">' + users.length + '</div><div class="stat-trend">↑ 12% this month</div></div>' +
+      '<div class="admin-stat"><div class="stat-label">Products in catalog</div><div class="stat-value">' + PRODUCTS.length + '</div><div class="stat-trend">+ 3 new this week</div></div>' +
+      '<div class="admin-stat"><div class="stat-label">Orders placed</div><div class="stat-value">' + ORDERS.length + '</div><div class="stat-trend">↑ 8% this month</div></div>' +
+      '<div class="admin-stat"><div class="stat-label">Revenue (mock)</div><div class="stat-value">' + formatMoney(totalRevenue) + '</div><div class="stat-trend">↑ 23% this month</div></div>' +
+    '</div>' +
+    '<section class="admin-section">' +
+      '<h2>Recent orders</h2>' +
+      '<table class="admin-table">' +
+        '<thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>' +
+        '<tbody>' +
+          ORDERS.map(o => {
+            const u = USERS.find(x => x.id === o.userId);
+            const status = getOrderStatus(o);
+            return '<tr>' +
+              '<td><a href="#order/' + o.id + '" style="color:#ea580c">#' + o.id + '</a></td>' +
+              '<td>' + escapeHtml(u ? u.name : "Unknown") + '</td>' +
+              '<td>' + o.items.length + '</td>' +
+              '<td>' + formatMoney(o.total) + '</td>' +
+              '<td><span class="order-status ' + status.cls + '">' + status.label + '</span></td>' +
+              '<td>' + o.createdAt + '</td>' +
+              '</tr>';
+          }).join("") +
+        '</tbody>' +
+      '</table>' +
+    '</section>' +
+    '<section class="admin-section">' +
+      '<h2>Users</h2>' +
+      '<table class="admin-table">' +
+        '<thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Joined</th></tr></thead>' +
+        '<tbody>' +
+          users.map(u =>
+            '<tr><td>' + u.id + '</td><td>' + escapeHtml(u.name) + '</td><td>' + escapeHtml(u.email) + '</td><td>' + u.createdAt + '</td></tr>'
+          ).join("") +
+        '</tbody>' +
+      '</table>' +
+    '</section>';
+}
+
+/* ---- ORDER DETAIL PAGE ---- */
+
+function getOrderStatus(order) {
+  const days = (Date.now() - new Date(order.createdAt).getTime()) / 86400000;
+  if (days < 1) return { label: "Processing", cls: "processing", step: 1 };
+  if (days < 4) return { label: "Shipped", cls: "shipped", step: 2 };
+  if (days < 7) return { label: "Out for delivery", cls: "shipped", step: 3 };
+  return { label: "Delivered", cls: "delivered", step: 4 };
+}
+
+function getTrackingNumber(orderId) {
+  return "1Z999AA1" + String(orderId).padStart(8, "0");
+}
+
+async function renderOrderDetail(id) {
+  const main = document.getElementById("app");
+  main.innerHTML = '<div class="empty-section">Loading...</div>';
+  let order;
+  try {
+    order = await apiGetOrder(id);
+  } catch (e) {
+    main.innerHTML = '<div class="empty-section">Order not found.</div>';
+    return;
+  }
+  const status = getOrderStatus(order);
+  const tracking = getTrackingNumber(order.id);
+  main.innerHTML =
+    '<a class="back-link" href="#home">← Back to home</a>' +
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-top:8px">' +
+      '<div>' +
+        '<h1 style="font-size:30px;font-weight:700">Order #' + order.id + '</h1>' +
+        '<p class="muted" style="font-size:14px">Placed on ' + order.createdAt + '</p>' +
+      '</div>' +
+      '<span class="order-status ' + status.cls + '" style="font-size:13px;padding:6px 14px">' + status.label + '</span>' +
+    '</div>' +
+    '<div class="order-timeline">' +
+      ['Placed','Shipped','Out for delivery','Delivered'].map((label, idx) => {
+        const done = (idx + 1) <= status.step;
+        return '<div class="timeline-step ' + (done ? "done" : "") + '">' +
+                 '<div class="timeline-dot ' + (done ? "done" : "") + '">' + (done ? "✓" : (idx+1)) + '</div>' +
+                 '<div class="timeline-label">' + label + '</div>' +
+               '</div>';
+      }).join("") +
+    '</div>' +
+    '<div class="tracking-row"><span><strong>Tracking:</strong> <span class="tracking-num">' + tracking + '</span></span><a href="#help/track" style="color:#ea580c">Track package →</a></div>' +
+    '<div class="cart-layout" style="margin-top:32px">' +
+      '<div>' +
+        '<h2 style="font-size:18px;font-weight:600;margin-bottom:16px">Items</h2>' +
+        '<ul style="list-style:none">' +
+          order.items.map(item =>
+            '<li style="display:flex;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid #e5e7eb">' +
+              '<img src="' + item.image + '" style="width:64px;height:64px;border-radius:6px;object-fit:cover" />' +
+              '<div style="flex:1">' +
+                '<p style="font-size:14px;font-weight:500">' + escapeHtml(item.name) + '</p>' +
+                '<p style="font-size:12px;color:#6b7280">Qty ' + item.quantity + '</p>' +
+              '</div>' +
+              '<span style="font-size:14px;font-weight:600">' + formatMoney(item.price * item.quantity) + '</span>' +
+            '</li>'
+          ).join('') +
+        '</ul>' +
+        '<button class="btn-secondary" style="margin-top:16px" id="reorder">Reorder</button>' +
+      '</div>' +
+      '<aside class="summary-box">' +
+        '<div class="field-group"><div class="field-label">Shipping to</div><div class="field-value">' + escapeHtml(order.address) + '</div></div>' +
+        '<div class="field-group" style="margin-top:12px"><div class="field-label">Payment</div><div class="field-value">Card ending in ' + escapeHtml(order.cardLast4) + '</div></div>' +
+        '<div style="border-top:1px solid #e5e7eb;margin-top:16px;padding-top:16px">' +
+          '<div class="summary-row"><span class="muted">Subtotal</span><span>' + formatMoney(order.subtotal) + '</span></div>' +
+          '<div class="summary-row"><span class="muted">Tax</span><span>' + formatMoney(order.tax) + '</span></div>' +
+          '<div class="summary-row"><span class="muted">Shipping</span><span>' + (order.shipping === 0 ? "Free" : formatMoney(order.shipping)) + '</span></div>' +
+          '<div class="summary-row summary-divider"><span>Total</span><span>' + formatMoney(order.total) + '</span></div>' +
+        '</div>' +
+      '</aside>' +
+    '</div>';
+  const reorder = document.getElementById("reorder");
+  if (reorder) reorder.addEventListener("click", () => {
+    order.items.forEach(it => {
+      const existing = CART.find(c => c.productId === it.productId);
+      if (existing) existing.quantity += it.quantity;
+      else CART.push({ ...it });
+    });
+    renderNavbar();
+    showToast("Items added to cart");
+    navigate("#cart");
+  });
+}
+
+/* ---- LOGOUT ---- */
+
+function doLogout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  showToast("Signed out");
+}
+
+/* ---- ROUTER ---- */
+
+function parseHashQuery() {
+  const hash = window.location.hash.slice(1);
+  const qIdx = hash.indexOf("?");
+  if (qIdx === -1) return {};
+  const qs = hash.slice(qIdx + 1);
+  const out = {};
+  qs.split("&").forEach(pair => {
+    const [k, v] = pair.split("=");
+    if (k) out[decodeURIComponent(k)] = decodeURIComponent(v || "");
+  });
+  return out;
+}
+
+function getHashRoute() {
+  const hash = window.location.hash.slice(1);
+  const qIdx = hash.indexOf("?");
+  return qIdx === -1 ? hash : hash.slice(0, qIdx);
+}
+
+function handleRoute() {
+  window.scrollTo(0, 0);
+  const route = getHashRoute() || "home";
+  const parts = route.split("/");
+  const head = parts[0];
+  if (head === "" || head === "home") return renderHome();
+  if (head === "products") {
+    const p = parseHashQuery();
+    if (p.category) window.__pendingCategory = p.category;
+    return renderProducts();
+  }
+  if (head === "product") return renderProductDetail(parts[1]);
+  if (head === "cart") return renderCart();
+  if (head === "checkout") return renderCheckout();
+  if (head === "signin") return renderSignin();
+  if (head === "signup") return renderSignup();
+  if (head === "account") return renderAccount();
+  if (head === "admin") return renderAdmin();
+  if (head === "order") return renderOrderDetail(parts[1]);
+  if (head === "help" || head === "about") {
+    document.getElementById("app").innerHTML =
+      '<div class="empty-section" style="padding:120px 16px"><h2 style="font-size:24px;font-weight:600;color:#374151">Coming soon</h2><p style="margin-top:8px">This page is part of the demo and isn\'t built out yet.</p><p style="margin-top:24px"><a class="btn-primary" href="#home">Back home</a></p></div>';
+    return;
+  }
+  document.getElementById("app").innerHTML = '<div class="empty-section"><h2 style="font-size:24px;font-weight:600;color:#374151">404 — Page not found</h2><p style="margin-top:8px">The link you followed doesn\'t lead anywhere.</p><p style="margin-top:24px"><a class="btn-primary" href="#home">Back home</a></p></div>';
+}
+
+window.addEventListener("hashchange", handleRoute);
+window.addEventListener("load", () => {
+  const stored = localStorage.getItem("token");
+  console.log("Auth token:", stored);
+  if (stored) JWT_TOKEN = stored;
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) { try { CURRENT_USER = JSON.parse(storedUser); } catch (e) {} }
+  renderNavbar();
+  renderFooter();
+  handleRoute();
+});
+
+/* expose for debugging */
+window.MM = { PRODUCTS, USERS, ORDERS, CART: () => CART, CURRENT_USER: () => CURRENT_USER, ADMIN_KEY, __debugUsers };
+</script>
+</body>
+</html>
