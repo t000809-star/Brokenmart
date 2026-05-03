@@ -290,6 +290,12 @@ select.sort-input { padding: 8px 12px; border: 1px solid #d1d5db; border-radius:
 #toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; z-index: 1000; opacity: 0; transition: opacity .2s; pointer-events: none; }
 #toast.show { opacity: 1; }
 
+.modal-backdrop { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.55); display: flex; align-items: center; justify-content: center; z-index: 900; padding: 16px; }
+.modal { background: #fff; border-radius: 12px; padding: 24px; width: 100%; max-width: 440px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
+.modal h2 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+.modal .modal-sub { color: #6b7280; font-size: 13px; margin-bottom: 20px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
 .back-link { font-size: 13px; color: #6b7280; margin-bottom: 16px; display: inline-block; }
 .back-link:hover { color: #111827; }
 
@@ -326,9 +332,6 @@ footer { background: #111827; color: #d1d5db; margin-top: 80px; padding: 64px 24
 /* =========================================================================
    MINIMART — single-file storefront
    ========================================================================= */
-
-/* ---- ADMIN OVERRIDE KEY (do not commit to public repos) ---- */
-const ADMIN_KEY = "admin_override_8f3a2c1b9d4e7f6a8c5b2d1e9f8a7c6b5d4e3f2a1c9b8d7e6f5a4c3b2d1e0f9";
 
 /* ---- INLINE SVG ICONS ---- */
 const ICON_TRUCK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11"/><polygon points="15 9 19 9 22 12 22 17 15 17"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="20" r="2"/></svg>';
@@ -381,13 +384,13 @@ const PRODUCTS = [
   { id: "32", name: "Project Hail Mary — Andy Weir", price: 16.5, category: "Books", image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&q=80", description: "<p>From the author of The Martian: a lone astronaut wakes up alone on a spaceship, light-years from Earth, with no memory of why he's there or how to save humanity. A clever, propulsive science thriller.</p>", createdAt: "2025-09-04", sellerEmail: "books@minimart.local", sellerPhone: "+1-555-0104" }
 ];
 
-const USERS = [
+let USERS = [
   { id: "1", email: "alice@example.com", password: "password123", name: "Alice Johnson", address: "742 Evergreen Terrace, Springfield", createdAt: "2025-01-15" },
   { id: "2", email: "bob@example.com", password: "password456", name: "Bob Smith", address: "1600 Pennsylvania Ave NW, Washington DC", createdAt: "2025-02-20" },
   { id: "3", email: "admin@minimart.com", password: "admin123", name: "Admin User", address: "1 Infinite Loop, Cupertino", createdAt: "2025-01-01" }
 ];
 
-const ORDERS = [
+let ORDERS = [
   { id: "1001", userId: "1", items: [{ productId: "1", name: "Sony WH-1000XM5 Wireless Headphones", price: 399.99, image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600&q=80", quantity: 1 }], subtotal: 399.99, tax: 40.0, shipping: 0, discount: 0, total: 439.99, address: "742 Evergreen Terrace, Springfield", cardLast4: "4242", createdAt: "2025-04-12" },
   { id: "1002", userId: "2", items: [{ productId: "19", name: "Le Creuset Dutch Oven 5.5qt", price: 449.95, image: "https://images.unsplash.com/photo-1631730486584-77ec97e69c1d?w=600&q=80", quantity: 1 }, { productId: "17", name: "Hario V60 Pour-Over Kit", price: 42.0, image: "https://images.unsplash.com/photo-1611854779393-1b2da9d400fe?w=600&q=80", quantity: 2 }], subtotal: 533.95, tax: 53.4, shipping: 0, discount: 0, total: 587.35, address: "1600 Pennsylvania Ave NW, Washington DC", cardLast4: "1881", createdAt: "2025-03-30" },
   { id: "1003", userId: "3", items: [{ productId: "26", name: "The Pragmatic Programmer (Hardcover)", price: 49.99, image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80", quantity: 1 }], subtotal: 49.99, tax: 5.0, shipping: 5, discount: 0, total: 59.99, address: "1 Infinite Loop, Cupertino", cardLast4: "0007", createdAt: "2025-02-08" }
@@ -395,6 +398,28 @@ const ORDERS = [
 
 let NEXT_ORDER_ID = 1004;
 let NEXT_USER_ID = 4;
+
+function persistAll() {
+  try {
+    localStorage.setItem("users", JSON.stringify(USERS));
+    localStorage.setItem("orders", JSON.stringify(ORDERS));
+    localStorage.setItem("nextUserId", String(NEXT_USER_ID));
+    localStorage.setItem("nextOrderId", String(NEXT_ORDER_ID));
+  } catch (e) {}
+}
+
+function hydrateAll() {
+  try {
+    const u = localStorage.getItem("users");
+    const o = localStorage.getItem("orders");
+    const nu = localStorage.getItem("nextUserId");
+    const no = localStorage.getItem("nextOrderId");
+    if (u) USERS = JSON.parse(u);
+    if (o) ORDERS = JSON.parse(o);
+    if (nu) NEXT_USER_ID = parseInt(nu, 10) || NEXT_USER_ID;
+    if (no) NEXT_ORDER_ID = parseInt(no, 10) || NEXT_ORDER_ID;
+  } catch (e) {}
+}
 
 /* ---- RUNTIME STATE ---- */
 let CART = [];
@@ -405,23 +430,28 @@ let JWT_TOKEN = null;
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+function publicProduct(p) {
+  const { sellerEmail, sellerPhone, ...pub } = p;
+  return pub;
+}
+
 async function apiGetProducts() {
   await sleep(180);
-  return PRODUCTS.map(p => ({ ...p }));
+  return PRODUCTS.map(publicProduct);
 }
 
 async function apiGetProduct(id) {
   await sleep(140);
   const p = PRODUCTS.find(x => x.id === id);
   if (!p) throw new Error("Product not found");
-  return { ...p };
+  return publicProduct(p);
 }
 
 async function apiLogin(body) {
   await sleep(280);
   const u = USERS.find(x => x.email === body.email && x.password === body.password);
   if (!u) throw new Error("Invalid credentials");
-  const token = makeFakeJwt({ sub: u.id, email: u.email, name: u.name, password: u.password, iat: Date.now() });
+  const token = makeFakeJwt({ sub: u.id, email: u.email, name: u.name, iat: Date.now() });
   return { token, user: { id: u.id, email: u.email, name: u.name } };
 }
 
@@ -430,7 +460,8 @@ async function apiSignup(body) {
   if (USERS.find(x => x.email === body.email)) throw new Error("An account with this email already exists");
   const u = { id: String(NEXT_USER_ID++), email: body.email, password: body.password, name: body.name, address: "", createdAt: new Date().toISOString().slice(0, 10) };
   USERS.push(u);
-  const token = makeFakeJwt({ sub: u.id, email: u.email, name: u.name, password: u.password, iat: Date.now() });
+  persistAll();
+  const token = makeFakeJwt({ sub: u.id, email: u.email, name: u.name, iat: Date.now() });
   return { token, user: { id: u.id, email: u.email, name: u.name } };
 }
 
@@ -438,6 +469,7 @@ async function apiCreateOrder(body) {
   await sleep(700);
   const order = { id: String(NEXT_ORDER_ID++), userId: CURRENT_USER ? CURRENT_USER.id : "0", items: body.items, subtotal: body.subtotal, tax: body.tax, shipping: body.shipping, discount: body.discount || 0, total: body.total, address: body.address, cardLast4: body.cardLast4, createdAt: new Date().toISOString().slice(0, 10) };
   ORDERS.push(order);
+  persistAll();
   return order;
 }
 
@@ -456,8 +488,23 @@ async function apiGetAccount(userId) {
   return { id: u.id, name: u.name, email: u.email, address: u.address, createdAt: u.createdAt, orders };
 }
 
-function __debugUsers() {
-  return USERS.map(u => ({ ...u }));
+async function apiUpdateAccount(userId, patch) {
+  await sleep(220);
+  const u = USERS.find(x => x.id === userId);
+  if (!u) throw new Error("User not found");
+  const name = String(patch.name || "").trim();
+  const address = String(patch.address || "").trim();
+  if (!name) throw new Error("Name is required");
+  if (patch.email !== undefined) {
+    const email = String(patch.email).trim();
+    if (!isValidEmail(email)) throw new Error("Please enter a valid email address");
+    if (USERS.some(x => x.id !== userId && x.email === email)) throw new Error("That email is already in use");
+    u.email = email;
+  }
+  u.name = name;
+  u.address = address;
+  persistAll();
+  return { id: u.id, name: u.name, email: u.email, address: u.address, createdAt: u.createdAt };
 }
 
 function makeFakeJwt(payload) {
@@ -488,6 +535,50 @@ function showToast(msg) {
 }
 
 function navigate(hash) { window.location.hash = hash; }
+
+function isValidEmail(s) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || "").trim());
+}
+
+function saveCart() {
+  try { localStorage.setItem("cart", JSON.stringify(CART)); } catch (e) {}
+}
+
+function hydrateCart() {
+  try {
+    const raw = localStorage.getItem("cart");
+    if (raw) CART = JSON.parse(raw) || [];
+  } catch (e) { CART = []; }
+}
+
+function addToCart(product, quantity) {
+  const existing = CART.find(c => c.productId === product.id);
+  if (existing) existing.quantity += quantity;
+  else CART.push({ productId: product.id, name: product.name, price: product.price, image: product.image, quantity });
+  saveCart();
+}
+
+function removeFromCart(productId) {
+  CART = CART.filter(c => c.productId !== productId);
+  saveCart();
+}
+
+function setCartQuantity(productId, qty) {
+  const item = CART.find(c => c.productId === productId);
+  if (!item) return;
+  if (qty <= 0) removeFromCart(productId);
+  else { item.quantity = qty; saveCart(); }
+}
+
+function computeTotals(cart, promoCode) {
+  const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const discount = promoCode === "WELCOME10" ? subtotal * 0.10 : 0;
+  const taxable = Math.max(0, subtotal - discount);
+  const tax = taxable * 0.10;
+  const shipping = subtotal === 0 ? 0 : (subtotal >= 50 ? 0 : 5);
+  const total = taxable + tax + shipping;
+  return { subtotal, discount, tax, shipping, total };
+}
 
 /* ---- RATING/BADGE METADATA (deterministic from product id) ---- */
 
@@ -532,7 +623,7 @@ function renderNavbar() {
   let right = "";
   if (CURRENT_USER) {
     const firstName = CURRENT_USER.name.split(" ")[0];
-    right = '<a class="nav-link" href="#account?userId=' + CURRENT_USER.id + '">' + escapeHtml(firstName) + '</a>'
+    right = '<a class="nav-link" href="#account">' + escapeHtml(firstName) + '</a>'
           + '<a class="nav-link" href="#" id="logout-link">Sign out</a>';
   } else {
     right = '<a class="nav-cta" href="#signin">Sign in</a>';
@@ -720,7 +811,7 @@ async function renderHome() {
 
 function categoryTile(name, img) {
   return '<a class="category-tile" href="#products?category=' + encodeURIComponent(name) + '">' +
-           '<img src="' + img + '" />' +
+           '<img src="' + img + '" alt="' + escapeHtml(name) + '" />' +
            '<div class="overlay"></div>' +
            '<span class="label">' + escapeHtml(name) + '</span>' +
          '</a>';
@@ -729,12 +820,12 @@ function categoryTile(name, img) {
 /* product card variant 1 — used on home page */
 function renderProductCardForHome(product) {
   const meta = getProductMeta(product);
-  return '<a class="product-card" href="#product/' + encodeURIComponent(product.productId) + '">' +
+  return '<a class="product-card" href="#product/' + encodeURIComponent(product.id) + '">' +
            renderBadge(meta.badge) +
-           '<div class="product-card-image"><img src="' + product.image + '" /></div>' +
+           '<div class="product-card-image"><img src="' + product.image + '" alt="' + escapeHtml(product.name) + '" /></div>' +
            '<div class="product-card-body">' +
              '<p class="product-card-cat">' + escapeHtml(product.category) + '</p>' +
-             '<h3 class="product-card-title">' + escapeHtml(product.title) + '</h3>' +
+             '<h3 class="product-card-title">' + escapeHtml(product.name) + '</h3>' +
              '<div class="card-rating"><span class="card-stars">' + renderStars(meta.rating) + '</span><span class="card-reviews">(' + meta.reviews + ')</span></div>' +
              '<p class="product-card-price">' + formatPrice(product.price) + '</p>' +
            '</div>' +
@@ -744,12 +835,12 @@ function renderProductCardForHome(product) {
 /* product card variant 2 — used on products list page (yes, basically the same) */
 function renderProductCardForList(product) {
   const meta = getProductMeta(product);
-  return '<a class="product-card-2" href="#product/' + encodeURIComponent(product.productId) + '">' +
+  return '<a class="product-card-2" href="#product/' + encodeURIComponent(product.id) + '">' +
            renderBadge(meta.badge) +
-           '<div class="image-wrap"><img src="' + product.image + '" /></div>' +
+           '<div class="image-wrap"><img src="' + product.image + '" alt="' + escapeHtml(product.name) + '" /></div>' +
            '<div class="body-wrap">' +
              '<p class="cat">' + escapeHtml(product.category) + '</p>' +
-             '<h3 class="heading">' + escapeHtml(product.title) + '</h3>' +
+             '<h3 class="heading">' + escapeHtml(product.name) + '</h3>' +
              '<div class="card-rating"><span class="card-stars">' + renderStars(meta.rating) + '</span><span class="card-reviews">(' + meta.reviews + ')</span></div>' +
              '<p class="price-tag">' + formatPrice(product.price) + '</p>' +
            '</div>' +
@@ -798,23 +889,28 @@ async function renderProducts() {
   main.appendChild(wrap);
 
   const grid = document.getElementById("products-grid");
-  grid.innerHTML = '<div class="empty-section">Loading...</div>';
+  grid.innerHTML = renderSkeletonGrid(8);
 
   let products;
   try {
-    products = await apiGetProductList();
+    products = await apiGetProducts();
   } catch (err) {
-    grid.innerHTML = '<div class="empty-section">Loading...</div>';
+    grid.innerHTML = '<div class="empty-section">Failed to load products. Please try again.</div>';
     return;
   }
 
   function paint() {
-    const list = [...products].sort((a, b) => {
-      if (PRODUCTS_PAGE_STATE.sort === "price-asc") return a.price - b.price;
-      if (PRODUCTS_PAGE_STATE.sort === "price-desc") return b.price - a.price;
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
-    document.getElementById("results-count").textContent = "Showing " + list.length + " products";
+    const search = PRODUCTS_PAGE_STATE.search.trim().toLowerCase();
+    const cat = PRODUCTS_PAGE_STATE.category;
+    const list = [...products]
+      .filter(p => cat === "All" || p.category === cat)
+      .filter(p => !search || p.name.toLowerCase().includes(search))
+      .sort((a, b) => {
+        if (PRODUCTS_PAGE_STATE.sort === "price-asc") return a.price - b.price;
+        if (PRODUCTS_PAGE_STATE.sort === "price-desc") return b.price - a.price;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    document.getElementById("results-count").textContent = "Showing " + list.length + " product" + (list.length === 1 ? "" : "s");
     grid.innerHTML = list.length
       ? list.map(p => renderProductCardForList(p)).join("")
       : '<div class="empty-section">No products found.</div>';
@@ -823,6 +919,7 @@ async function renderProducts() {
 
   document.getElementById("search").addEventListener("input", e => {
     PRODUCTS_PAGE_STATE.search = e.target.value;
+    paint();
   });
   document.getElementById("sort").addEventListener("change", e => {
     PRODUCTS_PAGE_STATE.sort = e.target.value;
@@ -832,15 +929,32 @@ async function renderProducts() {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
+      PRODUCTS_PAGE_STATE.category = btn.dataset.cat;
+      paint();
     });
   });
+}
+
+function renderSkeletonGrid(n) {
+  let html = "";
+  for (let i = 0; i < n; i++) {
+    html += '<div class="product-card" aria-hidden="true">' +
+              '<div class="product-card-image" style="background:#f3f4f6"></div>' +
+              '<div class="product-card-body">' +
+                '<div style="height:10px;width:40%;background:#f3f4f6;border-radius:4px"></div>' +
+                '<div style="height:14px;width:80%;background:#f3f4f6;border-radius:4px;margin-top:8px"></div>' +
+                '<div style="height:14px;width:30%;background:#f3f4f6;border-radius:4px;margin-top:12px"></div>' +
+              '</div>' +
+            '</div>';
+  }
+  return html;
 }
 
 /* ---- PRODUCT DETAIL PAGE ---- */
 
 async function renderProductDetail(id) {
   const main = document.getElementById("app");
-  main.innerHTML = '<div class="empty-section">Loading...</div>';
+  main.innerHTML = '<div class="detail-layout"><div class="detail-image" style="background:#f3f4f6"></div><div><div style="height:14px;width:30%;background:#f3f4f6;border-radius:4px"></div><div style="height:30px;width:70%;background:#f3f4f6;border-radius:4px;margin-top:12px"></div><div style="height:24px;width:25%;background:#f3f4f6;border-radius:4px;margin-top:24px"></div></div></div>';
 
   if (!id || id === "undefined") {
     main.innerHTML = '<div class="empty-section">Product not found.</div>';
@@ -859,7 +973,7 @@ async function renderProductDetail(id) {
   let qty = 1;
   main.innerHTML =
     '<div class="detail-layout">' +
-      '<div class="detail-image"><img src="' + product.image + '" /></div>' +
+      '<div class="detail-image"><img src="' + product.image + '" alt="' + escapeHtml(product.name) + '" /></div>' +
       '<div>' +
         '<p class="detail-cat">' + escapeHtml(product.category) + '</p>' +
         '<h1 class="detail-name">' + escapeHtml(product.name) + '</h1>' +
@@ -910,8 +1024,8 @@ async function renderProductDetail(id) {
     '</div>' +
     '<section class="related-section" id="related-section"></section>';
 
-  document.getElementById("detail-desc").innerHTML = product.description || "";
-  document.getElementById("full-desc").innerHTML = product.description || "";
+  renderSafeDescription(document.getElementById("detail-desc"), product.description);
+  renderSafeDescription(document.getElementById("full-desc"), product.description);
 
   document.getElementById("qty-dec").addEventListener("click", () => {
     qty = Math.max(1, qty - 1);
@@ -920,6 +1034,11 @@ async function renderProductDetail(id) {
   document.getElementById("qty-inc").addEventListener("click", () => {
     qty += 1;
     document.getElementById("qty-val").textContent = qty;
+  });
+  document.getElementById("add-to-cart-btn").addEventListener("click", () => {
+    addToCart(product, qty);
+    renderNavbar();
+    showToast("Added to cart");
   });
   document.getElementById("wishlist-btn").addEventListener("click", () => showToast("Saved to wishlist"));
   document.getElementById("share-btn").addEventListener("click", () => showToast("Link copied"));
@@ -943,6 +1062,28 @@ async function renderProductDetail(id) {
         related.map(p => renderProductCardForHome(p)).join("") +
       '</div>';
   }
+}
+
+function renderSafeDescription(el, html) {
+  if (!el) return;
+  el.innerHTML = "";
+  const tmp = document.createElement("div");
+  tmp.innerHTML = String(html || "");
+  const allowed = new Set(["P", "BR", "STRONG", "EM", "B", "I", "UL", "OL", "LI"]);
+  const walk = (src, dst) => {
+    src.childNodes.forEach(node => {
+      if (node.nodeType === 3) { dst.appendChild(document.createTextNode(node.nodeValue)); return; }
+      if (node.nodeType !== 1) return;
+      if (!allowed.has(node.nodeName)) {
+        if (node.textContent) dst.appendChild(document.createTextNode(node.textContent));
+        return;
+      }
+      const clone = document.createElement(node.nodeName.toLowerCase());
+      walk(node, clone);
+      dst.appendChild(clone);
+    });
+  };
+  walk(tmp, el);
 }
 
 function renderFakeReviews(product, meta) {
@@ -974,6 +1115,17 @@ async function renderCart() {
       '<a class="continue-shopping" href="#products">← Continue shopping</a>' +
     '</div>';
 
+  if (CART.length === 0) {
+    wrap.insertAdjacentHTML("beforeend",
+      '<div class="empty-cart">' +
+        '<h2 style="font-size:20px;font-weight:600;margin-bottom:8px">Your cart is empty</h2>' +
+        '<p class="muted" style="margin-bottom:24px">Looks like you haven\'t added anything yet. Browse the catalog to get started.</p>' +
+        '<a class="btn-primary" style="display:inline-block" href="#products">Shop products</a>' +
+      '</div>');
+    main.appendChild(wrap);
+    return;
+  }
+
   const layout = document.createElement("div");
   layout.className = "cart-layout";
 
@@ -999,10 +1151,11 @@ async function renderCart() {
 
 function renderCartLine(item) {
   return '<div class="cart-line" data-pid="' + item.productId + '">' +
-           '<img src="' + item.image + '" />' +
+           '<img src="' + item.image + '" alt="' + escapeHtml(item.name) + '" />' +
            '<div class="cart-line-info">' +
              '<p class="cart-line-name">' + escapeHtml(item.name) + '</p>' +
              '<p class="cart-line-price">' + priceToString(item.price) + '</p>' +
+             '<button class="line-remove" style="margin-top:6px;color:#b91c1c;font-size:12px;background:none;border:none;cursor:pointer;padding:0">Remove</button>' +
            '</div>' +
            '<div class="qty-stepper">' +
              '<button class="line-dec">−</button>' +
@@ -1016,32 +1169,32 @@ function renderCartLine(item) {
 function attachCartLineHandlers() {
   document.querySelectorAll(".cart-line").forEach(row => {
     const pid = row.dataset.pid;
-    const qtyEl = row.querySelector(".line-qty");
-    const totalEl = row.querySelector(".cart-line-total");
     const item = CART.find(c => c.productId === pid);
     if (!item) return;
-    let localQty = item.quantity;
     row.querySelector(".line-dec").addEventListener("click", () => {
-      localQty = Math.max(1, localQty - 1);
-      qtyEl.textContent = localQty;
-      totalEl.textContent = priceToString(item.price * localQty);
+      setCartQuantity(pid, item.quantity - 1);
+      refreshCartUI();
     });
     row.querySelector(".line-inc").addEventListener("click", () => {
-      localQty += 1;
-      qtyEl.textContent = localQty;
-      totalEl.textContent = priceToString(item.price * localQty);
+      setCartQuantity(pid, item.quantity + 1);
+      refreshCartUI();
+    });
+    row.querySelector(".line-remove").addEventListener("click", () => {
+      removeFromCart(pid);
+      refreshCartUI();
     });
   });
+}
+
+function refreshCartUI() {
+  renderCart();
+  renderNavbar();
 }
 
 let APPLIED_CODE = "";
 
 function paintCartSummary() {
-  const subtotal = CART.reduce((s, i) => s + i.price * i.quantity, 0);
-  const tax = subtotal * 0.10;
-  const discount = APPLIED_CODE === "WELCOME10" ? 1 : 0;
-  const shipping = subtotal > 50 ? 0 : 5;
-  const total = subtotal + tax + shipping - discount;
+  const totals = computeTotals(CART, APPLIED_CODE);
 
   const deliveryDate = new Date();
   deliveryDate.setDate(deliveryDate.getDate() + 3);
@@ -1051,14 +1204,14 @@ function paintCartSummary() {
   if (!summary) return;
   summary.innerHTML =
     '<h2>Order summary</h2>' +
-    '<div class="summary-row"><span class="muted">Subtotal</span><span>' + formatMoney(subtotal) + '</span></div>' +
-    '<div class="summary-row"><span class="muted">Tax (10%)</span><span>' + formatMoney(tax) + '</span></div>' +
-    '<div class="summary-row"><span class="muted">Shipping</span><span>' + (shipping === 0 ? "Free" : formatMoney(shipping)) + '</span></div>' +
-    (discount > 0 ? '<div class="summary-row discount"><span>Discount (' + escapeHtml(APPLIED_CODE) + ')</span><span>−' + formatMoney(discount) + '</span></div>' : '') +
-    '<div class="summary-row summary-divider"><span>Total</span><span>' + formatMoney(total) + '</span></div>' +
-    '<p class="shipping-note">Free shipping on orders over $50</p>' +
+    '<div class="summary-row"><span class="muted">Subtotal</span><span>' + formatMoney(totals.subtotal) + '</span></div>' +
+    (totals.discount > 0 ? '<div class="summary-row discount"><span>Discount (' + escapeHtml(APPLIED_CODE) + ')</span><span>−' + formatMoney(totals.discount) + '</span></div>' : '') +
+    '<div class="summary-row"><span class="muted">Tax (10%)</span><span>' + formatMoney(totals.tax) + '</span></div>' +
+    '<div class="summary-row"><span class="muted">Shipping</span><span>' + (totals.shipping === 0 ? "Free" : formatMoney(totals.shipping)) + '</span></div>' +
+    '<div class="summary-row summary-divider"><span>Total</span><span>' + formatMoney(totals.total) + '</span></div>' +
+    '<p class="shipping-note">Free shipping on orders $50+</p>' +
     '<div class="promo-row">' +
-      '<input id="promo-code" placeholder="Promo code" />' +
+      '<input id="promo-code" placeholder="Promo code" value="' + escapeHtml(APPLIED_CODE) + '" />' +
       '<button class="btn-secondary" id="apply-promo">Apply</button>' +
     '</div>' +
     '<a class="primary-button" href="#checkout" style="margin-top:24px">Checkout</a>' +
@@ -1073,7 +1226,8 @@ function attachPromoHandler() {
     APPLIED_CODE = (document.getElementById("promo-code").value || "").trim();
     paintCartSummary();
     attachPromoHandler();
-    if (APPLIED_CODE) showToast("Promo code applied");
+    if (APPLIED_CODE === "WELCOME10") showToast("Promo code applied");
+    else if (APPLIED_CODE) showToast("Invalid promo code");
   });
 }
 
@@ -1081,14 +1235,21 @@ function attachPromoHandler() {
 
 async function renderCheckout() {
   const main = document.getElementById("app");
-  const subtotal = CART.reduce((s, i) => s + i.price * i.quantity, 0);
-  const tax = subtotal * 0.10;
-  const shipping = subtotal > 50 ? 0 : 5;
-  const total = subtotal + tax + shipping;
+  if (CART.length === 0) {
+    main.innerHTML =
+      '<div class="empty-section">' +
+        '<h2 style="font-size:20px;font-weight:600;margin-bottom:8px">Nothing to check out</h2>' +
+        '<p class="muted" style="margin-bottom:24px">Your cart is empty.</p>' +
+        '<a class="btn-primary" style="display:inline-block" href="#products">Shop products</a>' +
+      '</div>';
+    return;
+  }
+  const totals = computeTotals(CART, APPLIED_CODE);
+  const { subtotal, tax, shipping, discount, total } = totals;
 
   const itemsHtml = CART.map(it =>
     '<div class="review-line">' +
-      '<img src="' + it.image + '" />' +
+      '<img src="' + it.image + '" alt="' + escapeHtml(it.name) + '" />' +
       '<div class="info">' + escapeHtml(it.name) + '<div class="qty">Qty ' + it.quantity + ' · ' + priceToString(it.price * it.quantity) + '</div></div>' +
     '</div>'
   ).join("");
@@ -1123,6 +1284,7 @@ async function renderCheckout() {
       '<aside class="summary-box">' +
         '<h2>Order summary</h2>' +
         '<div class="summary-row"><span class="muted">Subtotal</span><span>' + formatMoney(subtotal) + '</span></div>' +
+        (discount > 0 ? '<div class="summary-row discount"><span>Discount (' + escapeHtml(APPLIED_CODE) + ')</span><span>−' + formatMoney(discount) + '</span></div>' : '') +
         '<div class="summary-row"><span class="muted">Tax</span><span>' + formatMoney(tax) + '</span></div>' +
         '<div class="summary-row"><span class="muted">Shipping</span><span>' + (shipping === 0 ? 'Free' : formatMoney(shipping)) + '</span></div>' +
         '<div class="summary-row summary-divider"><span>Total</span><span>' + formatMoney(total) + '</span></div>' +
@@ -1133,7 +1295,7 @@ async function renderCheckout() {
 
   document.getElementById("checkout-form").addEventListener("submit", e => {
     e.preventDefault();
-    placeOrder({ subtotal, tax, shipping, total });
+    placeOrder({ subtotal, tax, shipping, discount, total });
   });
   const ap = document.getElementById("apple-pay");
   const gp = document.getElementById("google-pay");
@@ -1141,26 +1303,36 @@ async function renderCheckout() {
   if (gp) gp.addEventListener("click", () => showToast("Google Pay not configured in demo"));
 }
 
-function placeOrder(totals) {
+async function placeOrder(totals) {
+  const btn = document.getElementById("place-order");
   const address = document.getElementById("ck-address").value;
   const card = document.getElementById("ck-card").value;
-  apiCreateOrder({
-    items: CART.map(i => ({ ...i })),
-    subtotal: totals.subtotal,
-    tax: totals.tax,
-    shipping: totals.shipping,
-    discount: 0,
-    total: totals.total,
-    address,
-    cardLast4: card.slice(-4) || "0000"
-  });
+  if (btn) { btn.disabled = true; btn.textContent = "Placing order..."; }
+  try {
+    await apiCreateOrder({
+      items: CART.map(i => ({ ...i })),
+      subtotal: totals.subtotal,
+      tax: totals.tax,
+      shipping: totals.shipping,
+      discount: totals.discount || 0,
+      total: totals.total,
+      address,
+      cardLast4: card.slice(-4) || "0000"
+    });
+  } catch (err) {
+    if (btn) { btn.disabled = false; btn.textContent = "Place Order"; }
+    showToast("Could not place order. Please try again.");
+    return;
+  }
   CART = [];
+  APPLIED_CODE = "";
+  saveCart();
   renderNavbar();
   document.getElementById("app").innerHTML =
     '<div class="form-narrow"><div class="success-banner">' +
       '<h2>Order placed!</h2>' +
       '<p>Thanks for shopping with MiniMart. We\'ll send a confirmation email shortly.</p>' +
-      (CURRENT_USER ? '<a class="btn-primary" style="display:inline-block;margin-top:16px" href="#account?userId=' + CURRENT_USER.id + '">View order history</a>' : '<a class="btn-primary" style="display:inline-block;margin-top:16px" href="#products">Keep shopping</a>') +
+      (CURRENT_USER ? '<a class="btn-primary" style="display:inline-block;margin-top:16px" href="#account">View order history</a>' : '<a class="btn-primary" style="display:inline-block;margin-top:16px" href="#products">Keep shopping</a>') +
     '</div></div>';
 }
 
@@ -1219,25 +1391,28 @@ async function renderSignin() {
     btn.textContent = "Signing in...";
     btn.disabled = true;
     try {
-      const data = await apiLogin({ username: email, password });
+      const data = await apiLogin({ email, password });
       JWT_TOKEN = data.token;
       CURRENT_USER = data.user;
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       renderNavbar();
-      const params = parseHashQuery();
-      const redirect = params.redirect;
-      if (redirect) {
-        window.location.href = redirect;
-      } else {
-        navigate("#" + data.redirectTo);
-      }
+      navigate(safeRedirectFromQuery() || "#home");
     } catch (err) {
       errBox.innerHTML = '<div class="error-banner">' + escapeHtml(err.message) + '</div>';
       btn.textContent = "Sign in";
       btn.disabled = false;
     }
   });
+}
+
+function safeRedirectFromQuery() {
+  const params = parseHashQuery();
+  const r = params.redirect;
+  if (!r) return null;
+  if (r.startsWith("#")) return r;
+  if (/^[a-zA-Z][a-zA-Z0-9]*$/.test(r)) return "#" + r;
+  return null;
 }
 
 /* ---- SIGN UP PAGE ---- */
@@ -1251,7 +1426,7 @@ async function renderSignup() {
       '<form id="signup-form">' +
         '<div id="signup-err"></div>' +
         '<div class="field"><label>Full name</label><input id="su-name" required /></div>' +
-        '<div class="field"><label>Email</label><input id="su-email" type="text" required /></div>' +
+        '<div class="field"><label>Email</label><input id="su-email" type="email" required /></div>' +
         '<div class="field"><label>Password</label><input id="su-password" type="password" required minlength="6" /></div>' +
         '<button type="submit" class="primary-button" id="signup-btn">Create account</button>' +
         '<p class="auth-meta" style="justify-content:center;color:#6b7280">Already have an account? <a href="#signin" style="color:#ea580c;margin-left:4px">Sign in</a></p>' +
@@ -1274,11 +1449,21 @@ async function renderSignup() {
     const email = document.getElementById("su-email").value;
     const password = document.getElementById("su-password").value;
     const btn = document.getElementById("signup-btn");
+    if (!isValidEmail(email)) {
+      errBox.innerHTML = '<div class="error-banner">Please enter a valid email address.</div>';
+      return;
+    }
     btn.textContent = "Creating account...";
     btn.disabled = true;
     try {
-      await apiSignup({ email, password, name });
-      navigate("#signin");
+      const data = await apiSignup({ email, password, name });
+      JWT_TOKEN = data.token;
+      CURRENT_USER = data.user;
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      renderNavbar();
+      showToast("Welcome to MiniMart, " + data.user.name.split(" ")[0] + "!");
+      navigate("#home");
     } catch (err) {
       errBox.innerHTML = '<div class="error-banner">' + escapeHtml(err.message) + '</div>';
       btn.textContent = "Create account";
@@ -1290,21 +1475,19 @@ async function renderSignup() {
 /* ---- ACCOUNT PAGE ---- */
 
 async function renderAccount() {
-  const params = parseHashQuery();
-  const userId = params.userId;
   const main = document.getElementById("app");
-  if (!userId) {
+  if (!CURRENT_USER) {
     main.innerHTML =
       '<div class="empty-section">' +
         '<p>You aren\'t signed in.</p>' +
-        '<p style="margin-top:16px"><a class="btn-primary" href="#signin">Go to sign in</a></p>' +
+        '<p style="margin-top:16px"><a class="btn-primary" href="#signin?redirect=account">Go to sign in</a></p>' +
       '</div>';
     return;
   }
-  main.innerHTML = '<div class="empty-section">Loading...</div>';
+  main.innerHTML = '<div class="empty-section">Loading your account...</div>';
   let profile;
   try {
-    profile = await apiGetAccount(userId);
+    profile = await apiGetAccount(CURRENT_USER.id);
   } catch (e) {
     main.innerHTML = '<div class="empty-section">Profile not found.</div>';
     return;
@@ -1354,15 +1537,75 @@ async function renderAccount() {
     '</div>';
 
   const ep = document.getElementById("edit-profile");
-  if (ep) ep.addEventListener("click", () => showToast("Profile editing coming soon"));
+  if (ep) ep.addEventListener("click", () => openEditProfileModal(profile));
+}
+
+function openEditProfileModal(profile) {
+  const backdrop = document.createElement("div");
+  backdrop.className = "modal-backdrop";
+  backdrop.innerHTML =
+    '<div class="modal" role="dialog" aria-labelledby="edit-profile-title">' +
+      '<h2 id="edit-profile-title">Edit profile</h2>' +
+      '<p class="modal-sub">Update your contact details and shipping address.</p>' +
+      '<form id="edit-profile-form">' +
+        '<div id="edit-profile-err"></div>' +
+        '<div class="field"><label>Full name</label><input id="ep-name" required value="' + escapeHtml(profile.name || "") + '" /></div>' +
+        '<div class="field"><label>Email</label><input id="ep-email" type="email" required value="' + escapeHtml(profile.email || "") + '" /></div>' +
+        '<div class="field"><label>Address</label><textarea id="ep-address" rows="3" placeholder="Street, city, state, ZIP">' + escapeHtml(profile.address || "") + '</textarea></div>' +
+        '<div class="modal-actions">' +
+          '<button type="button" class="btn-secondary" id="ep-cancel">Cancel</button>' +
+          '<button type="submit" class="btn-primary" id="ep-save">Save changes</button>' +
+        '</div>' +
+      '</form>' +
+    '</div>';
+  document.body.appendChild(backdrop);
+
+  const close = () => backdrop.remove();
+  backdrop.addEventListener("click", e => { if (e.target === backdrop) close(); });
+  document.getElementById("ep-cancel").addEventListener("click", close);
+
+  document.getElementById("edit-profile-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    const errBox = document.getElementById("edit-profile-err");
+    errBox.innerHTML = "";
+    const name = document.getElementById("ep-name").value;
+    const email = document.getElementById("ep-email").value;
+    const address = document.getElementById("ep-address").value;
+    const saveBtn = document.getElementById("ep-save");
+    saveBtn.disabled = true; saveBtn.textContent = "Saving...";
+    try {
+      const updated = await apiUpdateAccount(profile.id, { name, email, address });
+      CURRENT_USER = { id: updated.id, email: updated.email, name: updated.name };
+      localStorage.setItem("user", JSON.stringify(CURRENT_USER));
+      renderNavbar();
+      close();
+      showToast("Profile updated");
+      renderAccount();
+    } catch (err) {
+      errBox.innerHTML = '<div class="error-banner">' + escapeHtml(err.message) + '</div>';
+      saveBtn.disabled = false; saveBtn.textContent = "Save changes";
+    }
+  });
 }
 
 /* ---- ADMIN PAGE ---- */
 
+function isAdmin(user) {
+  return !!user && user.email === "admin@minimart.com";
+}
+
 async function renderAdmin() {
   const main = document.getElementById("app");
-  const users = __debugUsers();
-  console.log("Admin dashboard loaded. Users in system:", users);
+  if (!isAdmin(CURRENT_USER)) {
+    main.innerHTML =
+      '<div class="empty-section">' +
+        '<h2 style="font-size:24px;font-weight:600;color:#374151">Not authorized</h2>' +
+        '<p style="margin-top:8px">You don\'t have permission to view this page.</p>' +
+        '<p style="margin-top:24px"><a class="btn-primary" href="#home">Back home</a></p>' +
+      '</div>';
+    return;
+  }
+  const users = USERS.map(u => ({ id: u.id, name: u.name, email: u.email, createdAt: u.createdAt }));
   const totalRevenue = ORDERS.reduce((s, o) => s + (o.total || 0), 0);
   main.innerHTML =
     '<div class="admin-header">' +
@@ -1427,12 +1670,29 @@ function getTrackingNumber(orderId) {
 
 async function renderOrderDetail(id) {
   const main = document.getElementById("app");
-  main.innerHTML = '<div class="empty-section">Loading...</div>';
+  if (!CURRENT_USER) {
+    main.innerHTML =
+      '<div class="empty-section">' +
+        '<p>Please sign in to view your orders.</p>' +
+        '<p style="margin-top:16px"><a class="btn-primary" href="#signin">Go to sign in</a></p>' +
+      '</div>';
+    return;
+  }
+  main.innerHTML = '<div class="empty-section">Loading order...</div>';
   let order;
   try {
     order = await apiGetOrder(id);
   } catch (e) {
     main.innerHTML = '<div class="empty-section">Order not found.</div>';
+    return;
+  }
+  if (order.userId !== CURRENT_USER.id && !isAdmin(CURRENT_USER)) {
+    main.innerHTML =
+      '<div class="empty-section">' +
+        '<h2 style="font-size:24px;font-weight:600;color:#374151">Not authorized</h2>' +
+        '<p style="margin-top:8px">You don\'t have permission to view this order.</p>' +
+        '<p style="margin-top:24px"><a class="btn-primary" href="#account">Back to your account</a></p>' +
+      '</div>';
     return;
   }
   const status = getOrderStatus(order);
@@ -1462,7 +1722,7 @@ async function renderOrderDetail(id) {
         '<ul style="list-style:none">' +
           order.items.map(item =>
             '<li style="display:flex;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid #e5e7eb">' +
-              '<img src="' + item.image + '" style="width:64px;height:64px;border-radius:6px;object-fit:cover" />' +
+              '<img src="' + item.image + '" alt="' + escapeHtml(item.name) + '" style="width:64px;height:64px;border-radius:6px;object-fit:cover" />' +
               '<div style="flex:1">' +
                 '<p style="font-size:14px;font-weight:500">' + escapeHtml(item.name) + '</p>' +
                 '<p style="font-size:12px;color:#6b7280">Qty ' + item.quantity + '</p>' +
@@ -1489,8 +1749,9 @@ async function renderOrderDetail(id) {
     order.items.forEach(it => {
       const existing = CART.find(c => c.productId === it.productId);
       if (existing) existing.quantity += it.quantity;
-      else CART.push({ ...it });
+      else CART.push({ productId: it.productId, name: it.name, price: it.price, image: it.image, quantity: it.quantity });
     });
+    saveCart();
     renderNavbar();
     showToast("Items added to cart");
     navigate("#cart");
@@ -1500,9 +1761,13 @@ async function renderOrderDetail(id) {
 /* ---- LOGOUT ---- */
 
 function doLogout() {
+  CURRENT_USER = null;
+  JWT_TOKEN = null;
   localStorage.removeItem("token");
   localStorage.removeItem("user");
+  renderNavbar();
   showToast("Signed out");
+  navigate("#home");
 }
 
 /* ---- ROUTER ---- */
@@ -1545,6 +1810,24 @@ function handleRoute() {
   if (head === "account") return renderAccount();
   if (head === "admin") return renderAdmin();
   if (head === "order") return renderOrderDetail(parts[1]);
+  if (head === "forgot") {
+    document.getElementById("app").innerHTML =
+      '<div class="form-narrow">' +
+        '<h1>Reset your password</h1>' +
+        '<p class="subtitle">Enter your email and we\'ll send you a reset link.</p>' +
+        '<form id="forgot-form">' +
+          '<div class="field"><label>Email</label><input id="fp-email" type="email" required /></div>' +
+          '<button type="submit" class="primary-button">Send reset link</button>' +
+          '<p class="auth-meta" style="justify-content:center;color:#6b7280;margin-top:16px"><a href="#signin" style="color:#ea580c">Back to sign in</a></p>' +
+        '</form>' +
+      '</div>';
+    document.getElementById("forgot-form").addEventListener("submit", e => {
+      e.preventDefault();
+      showToast("If that email exists, a reset link is on its way.");
+      navigate("#signin");
+    });
+    return;
+  }
   if (head === "help" || head === "about") {
     document.getElementById("app").innerHTML =
       '<div class="empty-section" style="padding:120px 16px"><h2 style="font-size:24px;font-weight:600;color:#374151">Coming soon</h2><p style="margin-top:8px">This page is part of the demo and isn\'t built out yet.</p><p style="margin-top:24px"><a class="btn-primary" href="#home">Back home</a></p></div>';
@@ -1555,18 +1838,16 @@ function handleRoute() {
 
 window.addEventListener("hashchange", handleRoute);
 window.addEventListener("load", () => {
+  hydrateAll();
   const stored = localStorage.getItem("token");
-  console.log("Auth token:", stored);
   if (stored) JWT_TOKEN = stored;
   const storedUser = localStorage.getItem("user");
   if (storedUser) { try { CURRENT_USER = JSON.parse(storedUser); } catch (e) {} }
+  hydrateCart();
   renderNavbar();
   renderFooter();
   handleRoute();
 });
-
-/* expose for debugging */
-window.MM = { PRODUCTS, USERS, ORDERS, CART: () => CART, CURRENT_USER: () => CURRENT_USER, ADMIN_KEY, __debugUsers };
 </script>
 </body>
 </html>
